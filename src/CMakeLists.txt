@@ -16,4 +16,9 @@ if (OPENMP_FOUND)
 endif()
 
 
-include_directories(${PROJ
+include_directories(${PROJECT_SOURCE_DIR})
+set(Boost_DEBUG 0)
+set(Boost_USE_STATIC_LIBS on)
+set(Boost_USE_MULTITHREADED ON) 
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost 1.53.0 REQUIRED COMPONENTS program_options filesystem 
