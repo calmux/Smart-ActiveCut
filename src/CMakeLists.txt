@@ -30,4 +30,14 @@ if(Boost_FOUND)
     grabcutseg.cxx
     loadfiles.cxx
     gmm.cxx
-   
+    query.cxx
+    graphcuts.cxx
+    graph.cpp
+    maxflow.cpp
+    utility.cxx
+    )
+
+  target_link_libraries(activeCutSeg ${ITK_LIBRARIES} ${Boost_LIBRARIES})
+
+endif()
+
