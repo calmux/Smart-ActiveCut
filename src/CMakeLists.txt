@@ -21,4 +21,13 @@ set(Boost_DEBUG 0)
 set(Boost_USE_STATIC_LIBS on)
 set(Boost_USE_MULTITHREADED ON) 
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.53.0 REQUIRED COMPONENTS program_options filesystem 
+find_package(Boost 1.53.0 REQUIRED COMPONENTS program_options filesystem system)
+
+if(Boost_FOUND)
+  MESSAGE(STATUS "Project source dir: " ${PROJECT_SOURCE_DIR})
+  include_directories(${Boost_INCLUDE_DIRS})
+  add_executable(activeCutSeg
+    grabcutseg.cxx
+    loadfiles.cxx
+    gmm.cxx
+   
