@@ -275,3 +275,195 @@ int kmeans(const vnl_matrix <double> & data,
 	       // mean_ssr = compute_mean_ssr(data, alpha, cc, gmm_labels, par, whatground);
 
 	       if (par.verbose >= 2) 
+		    printf("   kmeans run %i,  mean_ssr = %E\n", r, mean_ssr[r]);
+	  }
+	  while(fabs((mean_ssr[r] - mean_ssr_old) / mean_ssr_old) > 1e-5);
+	  
+	  // if (best_mean_ssr > mean_ssr) {
+	  //      best_mean_ssr = mean_ssr;
+	  //      best_cc = cc;
+	  // }
+	  // if (par.verbose >= 1) 
+	  //      printf("  kmeans run %i done. mean_ssr = %E. best_mean_ssr = %E\n", r, mean_ssr[r], best_mean_ssr);
+	   printf("  kmeans run %i done. mean_ssr = %E.\n", r, mean_ssr[r]);
+     } // kmeans run r.
+
+     // give best cc, re-estimate lables. 
+     mean_ssr[0] = kmeans_updatelabels(data, cc[mean_ssr.arg_max()], alpha, gmm_labels, par, whatground);
+     printf("kmeans(): best_mean_ssr = %E\n", mean_ssr[0]);
+}
+
+int kmeans_init(const vnl_matrix <double> & data,
+		const vnl_vector<unsigned> & alpha,
+		vnl_matrix<double> & cc,
+		ParType & par,
+		unsigned whatground,
+		unsigned seed)
+{
+     boost::random::mt19937 rng(42u);         // produces randomness out of thin air
+     rng.seed(static_cast<unsigned int>(seed));
+     boost::random::uniform_real_distribution<> uni_dist(0, 1);
+     unsigned n_comp = cc.rows();
+
+     // define a pdf. it include both fg and bg samples. But unused cell will be
+     // zero and have no effect on the results.
+     vnl_vector<double> pdf(par.n_samples, 0);
+     
+     // find the first bogus center. 
+     unsigned sample_id = 0;
+     uni_dist(rng);
+
+     do {
+     	  // find one in FG or BG. 
+     	  sample_id =  (int)(floor) (uni_dist(rng) * par.n_samples);
+     }
+     while (alpha(sample_id ) != whatground);
+     cc.set_row(0, data.get_row(sample_id) );
+
+     unsigned clsIdx = 0;
+     double rand_num = 0;
+     double cdf = 0;
+     for (clsIdx = 0; clsIdx < n_comp; clsIdx ++) {
+     	  compute_dist(pdf, data, alpha, cc, clsIdx, whatground);
+     	  rand_num = uni_dist(rng);
+     	  cdf = 0;
+
+     	  sample_id = 0;
+     	  while (rand_num > cdf) {
+     	       sample_id ++;
+     	       cdf += pdf[sample_id];
+     	  }
+
+     	  // found the point. 
+	  if (par.verbose >= 2) {
+	       printf("kmeans_init(): cc[%i] init to sample %i.\n", clsIdx, sample_id);
+	  }
+     	  cc.set_row(clsIdx, data.get_row(sample_id));
+     }
+
+     return 0;
+}
+
+int compute_dist(vnl_vector<double> & pdf,
+		 const vnl_matrix<double> data, 
+		 const vnl_vector<unsigned> & alpha,
+		 const vnl_matrix<double> & cc,
+		 unsigned cur_comp_id, // current cluster id.
+		 unsigned whatground)
+{
+     double min_dist = 0, this_dist = 0;
+     unsigned prev_comp_id = 0;
+     unsigned n_samples = data.rows();
+     pdf.fill( 0 );
+
+     for (unsigned sample_id = 0; sample_id < n_samples; sample_id ++) {
+	  if (alpha[sample_id] == whatground) {
+	       min_dist = 1e10;
+	       if (cur_comp_id == 0) {
+		    min_dist = (data.get_row(sample_id) - cc.get_row(0)).squared_magnitude();
+	       }
+	       else {
+		    for (prev_comp_id = 0; prev_comp_id < cur_comp_id; prev_comp_id ++) {
+			 this_dist = (data.get_row(sample_id) - cc.get_row(prev_comp_id)).squared_magnitude();
+			 if (this_dist < min_dist)
+			      min_dist = this_dist;
+		    }
+	       }
+
+	       // now I have the min_dist for current point. save it. 
+	       pdf[sample_id] = min_dist;
+	  }  // in whatground.
+     }
+
+     // normalize the pdf. the zero entry outside of whatground does not have
+     // effect of summation.
+     pdf = pdf / pdf.sum();
+     return 0;
+}
+
+double kmeans_updatelabels(const vnl_matrix <double> & data,
+			   const vnl_matrix<double> & cc,
+			   const vnl_vector<unsigned> & alpha,
+			   vnl_matrix<double> & gmm_labels, // initial gmm labels.
+			   ParType & par,
+			   unsigned whatground)
+{
+     double mean_ssr = 0;
+     double nearest_dist = 0, this_dist = 0;
+     unsigned nearest_label = 0;
+     unsigned n_points = 0, n_comp = 0;
+
+     if (whatground == ALPHA_FG) n_comp = par.gmm_fg.n_comp;
+     else if (whatground == ALPHA_BG) n_comp = par.gmm_bg.n_comp;
+
+     vnl_vector <double> zero_vec(gmm_labels.cols(), 0);
+
+     for (unsigned sample_id = 0; sample_id < par.n_samples; sample_id ++) {
+	  if (alpha[sample_id] == whatground) {
+	       n_points ++;
+	       nearest_dist = 1e10;
+	       for (unsigned clsIdx = 0; clsIdx < n_comp; clsIdx ++) {
+		    // printf("squared_mag: %f    ", squared_mag(data[sample_id], cc[clsIdx], par.n_channels));
+		    // printf("orig: %f\n", (data.get_row(sample_id) - cc.get_row(clsIdx)).squared_magnitude());
+		    // this_dist  = (data.get_row(sample_id) - cc.get_row(clsIdx)).squared_magnitude();
+		    this_dist = squared_mag(data[sample_id], cc[clsIdx], par.n_channels);
+		    if (this_dist < nearest_dist ) {
+			 nearest_dist = this_dist;
+			 nearest_label = clsIdx;
+		    }
+	       } // clsIdx
+	       
+	       // found the nearest cluster center. 
+	       gmm_labels.set_row(sample_id, zero_vec);
+	       gmm_labels(sample_id, nearest_label) = 1;
+	       mean_ssr += nearest_dist;
+
+	       // assert (gmm_labels.get_row(sample_id).sum() == 1);
+	  } // whatground
+     } // for
+     
+     mean_ssr = mean_ssr / n_points;
+     return mean_ssr;
+}
+
+double squared_mag(const double * A, const double * B, unsigned len)
+{
+     double r = 0;
+     for (unsigned n = 0; n < len; n ++) {
+	  r += pow((A[n] - B[n]), 2);
+     }
+     
+     return r;
+}
+// update cluster center. 
+int kmeans_updatecc(const vnl_matrix <double> & data,
+		    const vnl_vector<unsigned> & alpha,
+		    vnl_matrix<double> & cc,
+		    const vnl_matrix<double> & gmm_labels, // initial gmm labels.
+		    ParType & par,
+		    unsigned whatground)
+{
+     unsigned clsIdx = 0;
+     unsigned n_comp = cc.rows();
+     vnl_vector<double> n_points(n_comp, 0);
+     vnl_matrix<double> cc_sum(n_comp, par.n_channels, 0);
+
+     for (unsigned sample_id = 0; sample_id < par.n_samples; sample_id ++) {
+	  if (alpha[sample_id] == whatground) {     
+	       clsIdx = gmm_labels.get_row(sample_id).arg_max();
+	       cc_sum.set_row(clsIdx, cc_sum.get_row(clsIdx) + data.get_row(sample_id) );
+	       n_points[clsIdx] ++;
+	  } // whatground
+     } // for
+
+     // compute mean from the sum.
+     for (clsIdx = 0; clsIdx < n_comp; clsIdx ++) {
+	  cc.set_row(clsIdx, cc_sum.get_row(clsIdx) / n_points[clsIdx]);
+     }
+     return 0;
+}
+
+double compute_mean_ssr(const vnl_matrix <double> & data,
+			const vnl_vector<unsigned> & alpha,
+			vnl_matrix<double> & cc,
+			const vnl_matrix<double> & gmm_labels, // initial gmm labels.
