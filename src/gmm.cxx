@@ -467,3 +467,163 @@ double compute_mean_ssr(const vnl_matrix <double> & data,
 			const vnl_vector<unsigned> & alpha,
 			vnl_matrix<double> & cc,
 			const vnl_matrix<double> & gmm_labels, // initial gmm labels.
+			ParType & par,
+			unsigned whatground)
+{
+     double mean_ssr = 0;
+     unsigned n_points = 0;
+     unsigned clsIdx = 0;
+     for (unsigned sample_id = 0; sample_id < par.n_samples; sample_id ++) {
+	  if (alpha[sample_id] == whatground) {
+	       n_points ++;
+	       clsIdx = gmm_labels.get_row(sample_id).arg_max();
+	       // mean_ssr += (data.get_row(sample_id) - cc.get_row(clsIdx)).squared_magnitude();
+	       mean_ssr += squared_mag(data[sample_id], cc[clsIdx], par.n_channels);
+	  }
+     }
+     
+     mean_ssr = mean_ssr / n_points;
+     return mean_ssr;
+}
+
+double eval_ll(const vnl_matrix <double> & data, 
+	       const vnl_vector<unsigned> & alpha,
+	       const GMMType & gmm,
+	       unsigned whatground)
+{
+     unsigned n_samples = data.rows();
+     unsigned n_comp = gmm.n_comp;
+     unsigned n_channels = data.cols();
+
+     vnl_vector<double> exp_term (gmm.n_comp, 0);
+     vnl_vector<double> sample_c (n_channels);
+     
+     double m = 0; // max value of the exp term.
+     double LL = 0, sum_term = 0;
+     for (unsigned sample_id = 0; sample_id < n_samples; sample_id ++) {
+	  if (alpha[sample_id] == whatground) {     
+	       for (unsigned k = 0; k < n_comp; k ++) {
+		    sample_c = data.get_row(sample_id) - gmm.comp[k].mu;
+		    exp_term[k] = (- 0.5 * n_channels) * log(2 * PI)
+			 - 0.5 * log(gmm.comp[k].det_cov) 
+			 - 0.5 * dot_product(gmm.comp[k].inv_cov * sample_c, sample_c);
+	       }
+	       m = exp_term.max_value();
+	       exp_term = exp_term - m;
+	       sum_term = 0;
+	       for (unsigned k = 0; k < n_comp; k ++) {
+		    sum_term += gmm.pi(sample_id, k) * exp(exp_term[k]);
+	       }	       
+
+	       // single data point LL added to total.
+	       LL = LL + log(sum_term) + m;
+	  } // whatground
+     } // for
+
+     return LL;
+}
+
+double eval_ell(const vnl_matrix <double> & data, 
+	       const vnl_matrix<double> & gmm_labels, // initial gmm labels.
+	       const vnl_vector<unsigned> & alpha,
+	       const GMMType & gmm,
+	       unsigned whatground)
+{
+     unsigned n_samples = data.rows();
+     unsigned n_comp = gmm.n_comp;
+     unsigned n_channels = data.cols();
+
+     double exp_term = 0;
+     vnl_vector<double> sample_c (n_channels);
+     
+     double m = 0; // max value of the exp term.
+     double LL = 0, sum_term = 0;
+     for (unsigned sample_id = 0; sample_id < n_samples; sample_id ++) {
+	  if (alpha[sample_id] == whatground) {     
+	       for (unsigned k = 0; k < n_comp; k ++) { // 
+		    sample_c = data.get_row(sample_id) - gmm.comp[k].mu;
+		    exp_term = (- 0.5 * n_channels) * log(2 * PI)
+			 - 0.5 * log(gmm.comp[k].det_cov) 
+			 - 0.5 * dot_product(gmm.comp[k].inv_cov * sample_c, sample_c);
+		    
+		    LL = LL + gmm_labels(sample_id, k) * (log(gmm.pi(sample_id, k)) + exp_term);
+	       }
+	  } // whatground
+     } // for
+
+     return LL;
+}
+
+double low_bound(const vnl_matrix<double> & data, 
+		 const vnl_matrix<double> & gmm_labels,
+		 const vnl_vector<unsigned> & alpha,
+		 const GMMType & gmm,
+		 unsigned whatground)
+{
+     unsigned n_samples = data.rows();
+     unsigned n_comp = gmm.n_comp;
+     unsigned n_channels = data.cols();
+
+     // lower bound  = Q(theta, theta_old) + entropy
+     double q_func = eval_ell(data, gmm_labels, alpha, gmm, whatground);
+     
+     // compute entropy.
+     double exp_term = 0;
+     double m = 0; // max value of the exp term.
+     double entropy = 0;
+     for (unsigned sample_id = 0; sample_id < n_samples; sample_id ++) {
+	  if (alpha[sample_id] == whatground) {     
+	       for (unsigned k = 0; k < n_comp; k ++) {
+		    if (gmm_labels(sample_id, k) > 0) {
+			 entropy += gmm_labels(sample_id, k) * log (gmm_labels(sample_id, k));
+		    }
+		    else {
+			 // do nothing, since the 0 * log(0) has limit 0.
+		    }
+	       }
+	  } // whatground
+     } // for
+
+     return q_func - entropy;
+}
+
+
+double kl_dvg(const vnl_matrix <double> & data, 
+	      vnl_sparse_matrix <double> & con_map,
+	      const vnl_matrix<double> & gmm_labels,
+	      const vnl_vector<unsigned> & alpha,
+	      const GMMType & gmm,
+	      unsigned whatground)
+{
+     unsigned n_samples = alpha.size();
+     unsigned n_comp = gmm.n_comp;
+     unsigned n_channels = gmm.comp[0].mu.size();
+
+     // compute new p(z|x)
+     vnl_matrix<double> new_post(n_samples, n_comp, 0);
+     gmm_estep(data, con_map, new_post, alpha, whatground, gmm);
+
+     // compute entropy.
+     double exp_term = 0;
+     double m = 0; // max value of the exp term.
+     double KL = 0;
+     for (unsigned sample_id = 0; sample_id < n_samples; sample_id ++) {
+	  if (alpha[sample_id] == whatground) {     
+	       for (unsigned k = 0; k < n_comp; k ++) {
+		    if (gmm_labels(sample_id,k) != 0 && new_post(sample_id,k) != 0)
+			 KL -= gmm_labels(sample_id, k) * (log(new_post(sample_id, k)) - log(gmm_labels(sample_id, k)) );
+		    else if (gmm_labels(sample_id,k) != 0 && new_post(sample_id,k) == 0)
+		    {
+			 // printf("kl_dvg(): p(z|x) = 0 but q(z) != 0. No idea!\n");
+		    }
+		    else if (gmm_labels(sample_id,k) == 0 && new_post(sample_id,k) != 0) {
+			 // these cases, would be zero.
+		    }
+		    else if (gmm_labels(sample_id,k) == 0 && new_post(sample_id,k) == 0) { // both are zero.
+			 // printf("kl_dvg(): sample %i, comp %i, both p(z|x) and q(z) = 0. \n", sample_id, k);
+		    }
+	       }
+	  } // whatground
+     }
+     return KL;
+}
