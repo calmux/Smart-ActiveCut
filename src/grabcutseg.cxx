@@ -26,4 +26,12 @@ int main(int argc, char* argv[])
 	  ("help,h", "Grab cut segmentation of 3D multi-channel traumatic brain injury (TBI) images.")
 
 	  ("ncompbg,b", po::value<unsigned>(&par.gmm_bg.n_comp)->default_value(4),
-	   "number of Gaussian components in backgroun
+	   "number of Gaussian components in background.")
+
+	  ("ncompfg,f", po::value<unsigned>(&par.gmm_fg.n_comp)->default_value(2),
+	   "number of Gaussian components in foreground.")
+
+	  ("maxem,m", po::value<unsigned>(&maxem)->default_value(30),
+	   "Max number of EM iterations.")
+
+	  (
