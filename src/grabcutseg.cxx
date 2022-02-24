@@ -38,4 +38,9 @@ int main(int argc, char* argv[])
 	   "number of kmeans runs.")
 
 	  ("betaf", po::value<double>(&par.gmm_fg.beta)->default_value(1),
-	   "smoothness (MRF) constraint for fore
+	   "smoothness (MRF) constraint for foreground gmm segmentation.")
+
+	  ("betab", po::value<double>(&par.gmm_bg.beta)->default_value(1),
+	   "Smoothness (MRF) constraint for background gmm segmentation.")
+
+	  ("gamma,g", po::value<double>(&par
