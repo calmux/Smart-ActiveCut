@@ -34,4 +34,8 @@ int main(int argc, char* argv[])
 	  ("maxem,m", po::value<unsigned>(&maxem)->default_value(30),
 	   "Max number of EM iterations.")
 
-	  (
+	  ("kmeansruns,r", po::value<unsigned>(&par.kmeansruns)->default_value(5),
+	   "number of kmeans runs.")
+
+	  ("betaf", po::value<double>(&par.gmm_fg.beta)->default_value(1),
+	   "smoothness (MRF) constraint for fore
