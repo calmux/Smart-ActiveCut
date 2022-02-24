@@ -23,4 +23,7 @@ int main(int argc, char* argv[])
      // program options.
      po::options_description mydesc("Options can only used at commandline");
      mydesc.add_options()
-	  ("help,h", "Grab cut 
+	  ("help,h", "Grab cut segmentation of 3D multi-channel traumatic brain injury (TBI) images.")
+
+	  ("ncompbg,b", po::value<unsigned>(&par.gmm_bg.n_comp)->default_value(4),
+	   "number of Gaussian components in backgroun
