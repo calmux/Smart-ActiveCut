@@ -16,4 +16,11 @@ int main(int argc, char* argv[])
      unsigned maxem = 0;;
      unsigned cov_type = 0;
      bool cov_shared = false;
-     bool noactlearn = fa
+     bool noactlearn = false;
+     par.baseline = false;
+     
+
+     // program options.
+     po::options_description mydesc("Options can only used at commandline");
+     mydesc.add_options()
+	  ("help,h", "Grab cut 
