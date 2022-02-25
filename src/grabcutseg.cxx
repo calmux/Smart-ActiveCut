@@ -43,4 +43,10 @@ int main(int argc, char* argv[])
 	  ("betab", po::value<double>(&par.gmm_bg.beta)->default_value(1),
 	   "Smoothness (MRF) constraint for background gmm segmentation.")
 
-	  ("gamma,g", po::value<double>(&par
+	  ("gamma,g", po::value<double>(&par.gamma)->default_value(1),
+	   "alpha smoothness constraint.")
+
+	  ("beta0", po::value<double>(&par.beta0)->default_value(1),
+	   "An additional parameter in front of beta. ")
+
+	  ("eta", po::value<double>(&par.et
