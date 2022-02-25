@@ -64,4 +64,7 @@ int main(int argc, char* argv[])
 	  ("data,d", po::value<std::string>(&input_image_file),
 	   "Input all-channel image file. A 4D gipl or nii or nii.gz file.")
 
-	  ("i
+	  ("init,i", po::value<std::string>(&init_image_file),
+	   "A 3D volume image giving the user's initial input. Inside the box will be init'd unkown, and outside will be init'd as background.")
+
+	  ("priorf
