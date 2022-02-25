@@ -53,4 +53,9 @@ int main(int argc, char* argv[])
 	   "Smoothness for the query score")
 
 	  ("neighbors,n", po::value<unsigned>(&par.n_nbrs)->default_value(6),
-	   "number of neighbors of a voxel for graphcuts N-Links. Legal values are 
+	   "number of neighbors of a voxel for graphcuts N-Links. Legal values are 6, 18 and 26. ")
+
+	  ("covtype", po::value<unsigned>(&cov_type)->default_value(1),
+	   "Type of covariance matrix. 0 for full matrix, 1 for diagonal, 3 for identity.")
+
+	  ("covshared", po::bool_switch
