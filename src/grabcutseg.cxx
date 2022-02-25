@@ -49,4 +49,8 @@ int main(int argc, char* argv[])
 	  ("beta0", po::value<double>(&par.beta0)->default_value(1),
 	   "An additional parameter in front of beta. ")
 
-	  ("eta", po::value<double>(&par.et
+	  ("eta", po::value<double>(&par.eta)->default_value(1),
+	   "Smoothness for the query score")
+
+	  ("neighbors,n", po::value<unsigned>(&par.n_nbrs)->default_value(6),
+	   "number of neighbors of a voxel for graphcuts N-Links. Legal values are 
