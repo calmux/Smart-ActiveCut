@@ -58,4 +58,10 @@ int main(int argc, char* argv[])
 	  ("covtype", po::value<unsigned>(&cov_type)->default_value(1),
 	   "Type of covariance matrix. 0 for full matrix, 1 for diagonal, 3 for identity.")
 
-	  ("covshared", po::bool_switch
+	  ("covshared", po::bool_switch(&cov_shared), 
+	   "Whether all components of GMM has same covariance matrix. Default is no.")
+
+	  ("data,d", po::value<std::string>(&input_image_file),
+	   "Input all-channel image file. A 4D gipl or nii or nii.gz file.")
+
+	  ("i
