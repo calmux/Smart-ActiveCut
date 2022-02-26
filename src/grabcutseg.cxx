@@ -67,4 +67,7 @@ int main(int argc, char* argv[])
 	  ("init,i", po::value<std::string>(&init_image_file),
 	   "A 3D volume image giving the user's initial input. Inside the box will be init'd unkown, and outside will be init'd as background.")
 
-	  ("priorf
+	  ("priorfg", po::value<std::string>(&priorfg_file)->default_value("priorfg.nii.gz"),
+	   "4D file for the foreground (bleeding/edema) prior probability. Give a zero image if no prior available.")
+
+	  ("priorbg", po:
