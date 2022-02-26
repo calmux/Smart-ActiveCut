@@ -70,4 +70,7 @@ int main(int argc, char* argv[])
 	  ("priorfg", po::value<std::string>(&priorfg_file)->default_value("priorfg.nii.gz"),
 	   "4D file for the foreground (bleeding/edema) prior probability. Give a zero image if no prior available.")
 
-	  ("priorbg", po:
+	  ("priorbg", po::value<std::string>(&priorbg_file)->default_value("priorbg.nii.gz"),
+	   "4D file for the background (GM/WM/CSF) prior probability. Give a zero image if no prior available.")
+
+	  ("lambdafg", po::value<double>(&par.lambda
