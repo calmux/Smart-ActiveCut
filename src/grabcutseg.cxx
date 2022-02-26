@@ -77,4 +77,8 @@ int main(int argc, char* argv[])
 	   "the confidence on the foreground atlas. choose a lambda > 1 means more confidence on the atlas. ")
 
 	  ("lambdabg", po::value<double>(&par.lambda_bg)->default_value(1),
-	   "the confidence on the background atlas. c
+	   "the confidence on the background atlas. choose a lambda > 1 means more confidence on the atlas. ")
+
+	  ("mask,p", po::value<std::string>(&mask_file)->default_value("mask.nii.gz"),
+	   "Mask file. Outside the brain is zero, inside is one.")
+
