@@ -73,4 +73,8 @@ int main(int argc, char* argv[])
 	  ("priorbg", po::value<std::string>(&priorbg_file)->default_value("priorbg.nii.gz"),
 	   "4D file for the background (GM/WM/CSF) prior probability. Give a zero image if no prior available.")
 
-	  ("lambdafg", po::value<double>(&par.lambda
+	  ("lambdafg", po::value<double>(&par.lambda_fg)->default_value(1),
+	   "the confidence on the foreground atlas. choose a lambda > 1 means more confidence on the atlas. ")
+
+	  ("lambdabg", po::value<double>(&par.lambda_bg)->default_value(1),
+	   "the confidence on the background atlas. c
