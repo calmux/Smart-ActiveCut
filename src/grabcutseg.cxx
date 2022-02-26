@@ -82,3 +82,7 @@ int main(int argc, char* argv[])
 	  ("mask,p", po::value<std::string>(&mask_file)->default_value("mask.nii.gz"),
 	   "Mask file. Outside the brain is zero, inside is one.")
 
+	  ("alphafile,a", po::value<std::string>(&alpha_file)->default_value("alpha.nii.gz"),
+	   "The output segmentation file. Will be binary volume with same size as input data.")
+
+	  ("gmmfg", po::valu
