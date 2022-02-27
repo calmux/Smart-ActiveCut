@@ -104,4 +104,10 @@ int main(int argc, char* argv[])
 	   "output candidate component for user to check.")
 
 	  ("predth", po::value<float>(&par.pred_th)->default_value(0.75),
-	   "Threshold used to get connected components from predictive probabilit
+	   "Threshold used to get connected components from predictive probability.")
+
+	  ("qscoreth", po::value<float>(&par.qscore_th)->default_value(1.3),
+	   "Threshold for query score. Below that score, the active learning will stop.")
+
+	  ("baseline", po::bool_switch(&par.baseline), 
+	
