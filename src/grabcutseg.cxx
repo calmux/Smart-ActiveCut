@@ -95,4 +95,9 @@ int main(int argc, char* argv[])
 	   "Background GMM posterior.")
 
 	  ("bglabel", po::value<std::string>(&bg_label_file)->default_value("gmmbg_label.nii.gz"),
-	   "Ba
+	   "Background GMM segmentation label image.")
+
+	  ("queryscores,q", po::value<std::string>(&score_file)->default_value("queryscores.nii.gz"),
+	   "query scores file.")
+
+	  ("cand,c", po::value<std::string>(&cand_file)
