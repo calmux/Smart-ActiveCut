@@ -100,4 +100,8 @@ int main(int argc, char* argv[])
 	  ("queryscores,q", po::value<std::string>(&score_file)->default_value("queryscores.nii.gz"),
 	   "query scores file.")
 
-	  ("cand,c", po::value<std::string>(&cand_file)
+	  ("cand,c", po::value<std::string>(&cand_file)->default_value("cand.nii.gz"),
+	   "output candidate component for user to check.")
+
+	  ("predth", po::value<float>(&par.pred_th)->default_value(0.75),
+	   "Threshold used to get connected components from predictive probabilit
