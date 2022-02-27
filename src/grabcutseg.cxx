@@ -89,4 +89,10 @@ int main(int argc, char* argv[])
 	   "Foreground GMM posterior. ")
 
 	  ("fglabel", po::value<std::string>(&fg_label_file)->default_value("gmmfg_label.nii.gz"),
-	   "Foreground GMM segmentation label imag
+	   "Foreground GMM segmentation label image.")
+
+	  ("gmmbg", po::value<std::string>(&gmm_bg_file)->default_value("gmmbg.nii.gz"),
+	   "Background GMM posterior.")
+
+	  ("bglabel", po::value<std::string>(&bg_label_file)->default_value("gmmbg_label.nii.gz"),
+	   "Ba
