@@ -85,4 +85,8 @@ int main(int argc, char* argv[])
 	  ("alphafile,a", po::value<std::string>(&alpha_file)->default_value("alpha.nii.gz"),
 	   "The output segmentation file. Will be binary volume with same size as input data.")
 
-	  ("gmmfg", po::valu
+	  ("gmmfg", po::value<std::string>(&gmm_fg_file)->default_value("gmmfg.nii.gz"),
+	   "Foreground GMM posterior. ")
+
+	  ("fglabel", po::value<std::string>(&fg_label_file)->default_value("gmmfg_label.nii.gz"),
+	   "Foreground GMM segmentation label imag
