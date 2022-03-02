@@ -110,4 +110,7 @@ int main(int argc, char* argv[])
 	   "Threshold for query score. Below that score, the active learning will stop.")
 
 	  ("baseline", po::bool_switch(&par.baseline), 
-	
+	   "set baseline for baseline testing that allow background --> foreground and no active learning.")
+
+	  ("noactlearn", po::bool_switch(&noactlearn), 
+	   "If doing self-training and active learning after EM 
