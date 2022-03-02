@@ -113,4 +113,10 @@ int main(int argc, char* argv[])
 	   "set baseline for baseline testing that allow background --> foreground and no active learning.")
 
 	  ("noactlearn", po::bool_switch(&noactlearn), 
-	   "If doing self-training and active learning after EM 
+	   "If doing self-training and active learning after EM and graphcuts converges. default is yes.")
+
+	  ("logmax", po::value<unsigned>(&par.logimax)->default_value(5),
+	   "Max number of iterations in logistic() func.")
+
+	  ("seed,s", po::value<unsigned>(&par.seed)->default_value(0),
+	   "Seed for random nu
