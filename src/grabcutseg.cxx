@@ -119,4 +119,12 @@ int main(int argc, char* argv[])
 	   "Max number of iterations in logistic() func.")
 
 	  ("seed,s", po::value<unsigned>(&par.seed)->default_value(0),
-	   "Seed for random nu
+	   "Seed for random number generator.")
+
+	  ("verbose,v", po::value<unsigned>(&par.verbose)->default_value(0),
+	   "verbose level in [0, 3]. ")
+	  ;
+
+     po::variables_map vm;        
+     po::store(po::parse_command_line(argc, argv, mydesc), vm);
+    
