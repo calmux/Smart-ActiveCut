@@ -127,4 +127,14 @@ int main(int argc, char* argv[])
 
      po::variables_map vm;        
      po::store(po::parse_command_line(argc, argv, mydesc), vm);
-    
+     po::notify(vm);    
+
+     try {
+	  if ( (vm.count("help")) | (argc == 1) ) {
+	       std::cout << "Usage: grabcut [options]\n";
+	       std::cout << mydesc << "\n";
+	       return 0;
+	  }
+     }
+     catch(std::exception& e) {
+	  std::cou
