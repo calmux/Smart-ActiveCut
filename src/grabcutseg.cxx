@@ -137,4 +137,11 @@ int main(int argc, char* argv[])
 	  }
      }
      catch(std::exception& e) {
-	  std::cou
+	  std::cout << e.what() << "\n";
+	  return 1;
+     }    
+
+     // read data images.
+     ReaderType4DF::Pointer dataReader = ReaderType4DF::New();
+     dataReader->SetFileName(input_image_file);
+     dataReader->Updat
