@@ -150,3 +150,9 @@ int main(int argc, char* argv[])
      // load mask image. 
      ReaderType3DI::Pointer maskReader = ReaderType3DI::New();
      maskReader->SetFileName(mask_file);
+     maskReader->Update();
+     ImageType3DI::Pointer maskPtr = maskReader->GetOutput();
+
+     // create a lindex map, which convert (x,y,z) to linear index n. Later the
+     // lindex can be used for mask also.
+     ImageType3
