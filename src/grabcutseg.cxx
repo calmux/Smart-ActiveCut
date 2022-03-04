@@ -144,4 +144,9 @@ int main(int argc, char* argv[])
      // read data images.
      ReaderType4DF::Pointer dataReader = ReaderType4DF::New();
      dataReader->SetFileName(input_image_file);
-     dataReader->Updat
+     dataReader->Update();
+     ImageType4DF::Pointer dataPtr = dataReader->GetOutput();
+
+     // load mask image. 
+     ReaderType3DI::Pointer maskReader = ReaderType3DI::New();
+     maskReader->SetFileName(mask_file);
