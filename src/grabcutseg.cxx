@@ -170,4 +170,10 @@ int main(int argc, char* argv[])
      // convert the image into a NxP matrix, where N is the number of
      // super-pixel, and P is the number of channels.
      vnl_matrix <double> data;
-     load_data(dataPtr, maskPtr, data
+     load_data(dataPtr, maskPtr, data, lindexPtr);
+
+     // fill these values since load_* func use them.
+     par.n_channels = data.cols();
+     par.n_samples = data.rows();
+
+     // save the user input constraints, which include FG/
