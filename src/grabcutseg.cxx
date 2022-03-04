@@ -176,4 +176,10 @@ int main(int argc, char* argv[])
      par.n_channels = data.cols();
      par.n_samples = data.rows();
 
-     // save the user input constraints, which include FG/
+     // save the user input constraints, which include FG/BG/UNKNOWN.
+     vnl_vector <unsigned> hard_constraints;
+     hard_constraints.set_size(par.n_samples);
+     hard_constraints.fill(0);
+     load_constraints(lindexPtr, initPtr, hard_constraints, par);
+
+     
