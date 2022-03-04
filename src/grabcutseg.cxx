@@ -159,4 +159,10 @@ int main(int argc, char* argv[])
      ImageType3DU::Pointer lindexPtr = ImageType3DU::New();
      lindexPtr->SetRegions(maskRegion);
      lindexPtr->Allocate();
-     lindexPtr->
+     lindexPtr->FillBuffer( 0 ); // init to zero.
+
+     // read user initialized image.
+     ReaderType3DC::Pointer initReader = ReaderType3DC::New();
+     initReader->SetFileName(init_image_file);
+     initReader->Update();
+     ImageType3DC::Pointer initPtr
