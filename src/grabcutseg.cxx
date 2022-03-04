@@ -155,4 +155,8 @@ int main(int argc, char* argv[])
 
      // create a lindex map, which convert (x,y,z) to linear index n. Later the
      // lindex can be used for mask also.
-     ImageType3
+     ImageType3DI::RegionType maskRegion = maskPtr->GetLargestPossibleRegion();     
+     ImageType3DU::Pointer lindexPtr = ImageType3DU::New();
+     lindexPtr->SetRegions(maskRegion);
+     lindexPtr->Allocate();
+     lindexPtr->
