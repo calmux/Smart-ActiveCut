@@ -165,4 +165,9 @@ int main(int argc, char* argv[])
      ReaderType3DC::Pointer initReader = ReaderType3DC::New();
      initReader->SetFileName(init_image_file);
      initReader->Update();
-     ImageType3DC::Pointer initPtr
+     ImageType3DC::Pointer initPtr = initReader->GetOutput();
+
+     // convert the image into a NxP matrix, where N is the number of
+     // super-pixel, and P is the number of channels.
+     vnl_matrix <double> data;
+     load_data(dataPtr, maskPtr, data
