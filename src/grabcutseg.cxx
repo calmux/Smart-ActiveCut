@@ -188,4 +188,9 @@ int main(int argc, char* argv[])
      load_priors(lindexPtr, priorfg_file, priors_fg, par);
      load_priors(lindexPtr, priorbg_file, priors_bg, par);
 
-     // i
+     // init the remaining part of par.
+     par.gmm_fg.comp.resize(par.gmm_fg.n_comp);
+     par.gmm_fg.pi.set_size(par.n_samples, par.gmm_fg.n_comp);
+     par.gmm_fg.name = "GMM_FG";
+     par.gmm_bg.comp.resize(par.gmm_bg.n_comp);
+     par.gmm_
