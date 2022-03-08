@@ -182,4 +182,10 @@ int main(int argc, char* argv[])
      hard_constraints.fill(0);
      load_constraints(lindexPtr, initPtr, hard_constraints, par);
 
-     
+     // load priors from atlas.
+     vnl_matrix <double> priors_fg;
+     vnl_matrix <double> priors_bg;
+     load_priors(lindexPtr, priorfg_file, priors_fg, par);
+     load_priors(lindexPtr, priorbg_file, priors_bg, par);
+
+     // i
