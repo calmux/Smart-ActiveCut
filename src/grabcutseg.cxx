@@ -193,4 +193,8 @@ int main(int argc, char* argv[])
      par.gmm_fg.pi.set_size(par.n_samples, par.gmm_fg.n_comp);
      par.gmm_fg.name = "GMM_FG";
      par.gmm_bg.comp.resize(par.gmm_bg.n_comp);
-     par.gmm_
+     par.gmm_bg.pi.set_size(par.n_samples, par.gmm_bg.n_comp);
+     par.gmm_bg.name = "GMM_BG";
+
+     for (unsigned comp_id = 0; comp_id < par.gmm_fg.n_comp; comp_id ++) {
+	  par.gmm_fg.comp[comp_i
