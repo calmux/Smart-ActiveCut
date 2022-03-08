@@ -197,4 +197,8 @@ int main(int argc, char* argv[])
      par.gmm_bg.name = "GMM_BG";
 
      for (unsigned comp_id = 0; comp_id < par.gmm_fg.n_comp; comp_id ++) {
-	  par.gmm_fg.comp[comp_i
+	  par.gmm_fg.comp[comp_id].label = 0;
+	  par.gmm_fg.comp[comp_id].numPts = 0;
+	  par.gmm_fg.comp[comp_id].mu.set_size(par.n_channels);
+	  par.gmm_fg.comp[comp_id].mu.fill(0);
+	  par.gmm_fg.comp[comp_id].cov.set_size(par.n_c
