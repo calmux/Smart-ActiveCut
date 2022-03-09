@@ -206,4 +206,8 @@ int main(int argc, char* argv[])
 	  par.gmm_fg.comp[comp_id].inv_cov.set_size(par.n_channels, par.n_channels);
 	  par.gmm_fg.comp[comp_id].inv_cov.fill(0);
      }
-     for (unsigned comp
+     for (unsigned comp_id = 0; comp_id < par.gmm_bg.n_comp; comp_id ++) {
+	  par.gmm_bg.comp[comp_id].label = 0;
+	  par.gmm_bg.comp[comp_id].numPts = 0;
+	  par.gmm_bg.comp[comp_id].mu.set_size(par.n_channels);
+	  par.gmm_bg.comp[comp_id].mu.fill(0)
