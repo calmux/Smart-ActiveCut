@@ -219,4 +219,7 @@ int main(int argc, char* argv[])
 
      vnl_vector <unsigned> alpha(par.n_samples, 0);
      // initialize alpha vector from user input. 
-     for (unsigned sample_id = 0; sample_id < par.n_samples; sam
+     for (unsigned sample_id = 0; sample_id < par.n_samples; sample_id ++) {
+	  if (hard_constraints[sample_id] == HC_FG) alpha[sample_id] = ALPHA_FG;
+	  else if (hard_constraints[sample_id] == HC_BG) alpha[sample_id] = ALPHA_BG;
+	  else alpha[sample_id] = ALPHA_FG; // for unkown regions, in
