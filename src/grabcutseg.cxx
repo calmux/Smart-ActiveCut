@@ -214,4 +214,9 @@ int main(int argc, char* argv[])
 	  par.gmm_bg.comp[comp_id].cov.set_size(par.n_channels, par.n_channels);
 	  par.gmm_bg.comp[comp_id].cov.fill(0);
 	  par.gmm_bg.comp[comp_id].inv_cov.set_size(par.n_channels, par.n_channels);
-	  par.gmm_bg.c
+	  par.gmm_bg.comp[comp_id].inv_cov.fill(0);
+     }
+
+     vnl_vector <unsigned> alpha(par.n_samples, 0);
+     // initialize alpha vector from user input. 
+     for (unsigned sample_id = 0; sample_id < par.n_samples; sam
