@@ -222,4 +222,10 @@ int main(int argc, char* argv[])
      for (unsigned sample_id = 0; sample_id < par.n_samples; sample_id ++) {
 	  if (hard_constraints[sample_id] == HC_FG) alpha[sample_id] = ALPHA_FG;
 	  else if (hard_constraints[sample_id] == HC_BG) alpha[sample_id] = ALPHA_BG;
-	  else alpha[sample_id] = ALPHA_FG; // for unkown regions, in
+	  else alpha[sample_id] = ALPHA_FG; // for unkown regions, init to FG. 
+     }
+
+     vnl_matrix<double> gmm_labels(par.n_samples, par.gmm_fg.n_comp > par.gmm_bg.n_comp? par.gmm_fg.n_comp: par.gmm_bg.n_comp, 0);
+
+     // Kmeans segmentation on FG and BG.
+     kmeans(data, alpha, gmm_labe
