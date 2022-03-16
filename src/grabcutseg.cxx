@@ -210,4 +210,8 @@ int main(int argc, char* argv[])
 	  par.gmm_bg.comp[comp_id].label = 0;
 	  par.gmm_bg.comp[comp_id].numPts = 0;
 	  par.gmm_bg.comp[comp_id].mu.set_size(par.n_channels);
-	  par.gmm_bg.comp[comp_id].mu.fill(0)
+	  par.gmm_bg.comp[comp_id].mu.fill(0);
+	  par.gmm_bg.comp[comp_id].cov.set_size(par.n_channels, par.n_channels);
+	  par.gmm_bg.comp[comp_id].cov.fill(0);
+	  par.gmm_bg.comp[comp_id].inv_cov.set_size(par.n_channels, par.n_channels);
+	  par.gmm_bg.c
