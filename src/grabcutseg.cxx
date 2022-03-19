@@ -237,4 +237,9 @@ int main(int argc, char* argv[])
 
      if (par.verbose >= 1) {
 	  save_gmm_labelmap(gmm_labels, par, alpha, ALPHA_FG, lindexPtr, fg_label_file);
-	  save_gmm_labelmap(gmm_labels, par, alpha, ALPHA_BG, linde
+	  save_gmm_labelmap(gmm_labels, par, alpha, ALPHA_BG, lindexPtr, bg_label_file);
+     }
+
+     // do a M0 step, to estimate gmm parameters from kmeans labeling.
+     gmm_mstep(data, gmm_labels, alpha, ALPHA_FG, par.gmm_fg, cov_shared, cov_type);
+     gmm_mstep(data, gmm_labels, alpha, A
