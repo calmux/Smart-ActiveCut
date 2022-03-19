@@ -242,4 +242,9 @@ int main(int argc, char* argv[])
 
      // do a M0 step, to estimate gmm parameters from kmeans labeling.
      gmm_mstep(data, gmm_labels, alpha, ALPHA_FG, par.gmm_fg, cov_shared, cov_type);
-     gmm_mstep(data, gmm_labels, alpha, A
+     gmm_mstep(data, gmm_labels, alpha, ALPHA_BG, par.gmm_bg, cov_shared, cov_type);
+     update_pi(alpha, priors_fg, par.gmm_fg, par.lambda_fg);
+     update_pi(alpha, priors_bg, par.gmm_bg, par.lambda_bg);
+     print_par(par);
+
+     //
