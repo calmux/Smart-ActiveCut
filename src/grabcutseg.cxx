@@ -233,4 +233,8 @@ int main(int argc, char* argv[])
 
      // permute labels in gmm_labels to align with priors.
      align_priors(gmm_labels, priors_fg, alpha, ALPHA_FG, par);
- 
+     align_priors(gmm_labels, priors_bg, alpha, ALPHA_BG, par);
+
+     if (par.verbose >= 1) {
+	  save_gmm_labelmap(gmm_labels, par, alpha, ALPHA_FG, lindexPtr, fg_label_file);
+	  save_gmm_labelmap(gmm_labels, par, alpha, ALPHA_BG, linde
