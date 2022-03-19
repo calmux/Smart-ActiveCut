@@ -228,4 +228,9 @@ int main(int argc, char* argv[])
      vnl_matrix<double> gmm_labels(par.n_samples, par.gmm_fg.n_comp > par.gmm_bg.n_comp? par.gmm_fg.n_comp: par.gmm_bg.n_comp, 0);
 
      // Kmeans segmentation on FG and BG.
-     kmeans(data, alpha, gmm_labe
+     kmeans(data, alpha, gmm_labels, par, ALPHA_FG);
+     kmeans(data, alpha, gmm_labels, par, ALPHA_BG);
+
+     // permute labels in gmm_labels to align with priors.
+     align_priors(gmm_labels, priors_fg, alpha, ALPHA_FG, par);
+ 
