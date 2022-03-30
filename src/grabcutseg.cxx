@@ -247,4 +247,10 @@ int main(int argc, char* argv[])
      update_pi(alpha, priors_bg, par.gmm_bg, par.lambda_bg);
      print_par(par);
 
-     //
+     // pre-compute the N-Links. 
+     vnl_sparse_matrix<double> con_map;
+     vnl_sparse_matrix<double> nlinks;
+     build_adjmat(lindexPtr, data, con_map, par);
+     build_nlinks(data, con_map, nlinks, par);
+
+     unsigned alpha_
