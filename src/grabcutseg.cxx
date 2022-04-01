@@ -259,4 +259,15 @@ int main(int argc, char* argv[])
      unsigned em_iter = 0;
      vnl_vector<double> score_map(par.n_samples, 0);
 
-     /
+     // outer loop for act-learning.
+     unsigned cont_var = true;
+     do {
+	  alpha_change = 1e6;
+	  LL_bg_old = 0;
+	  LL_bg = -1e10;
+	  LL_fg_old =0;
+	  LL_fg = -1e10;
+	  LL_changed = true;
+	  em_iter = 0;
+
+	  // in
