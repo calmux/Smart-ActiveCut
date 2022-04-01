@@ -253,4 +253,10 @@ int main(int argc, char* argv[])
      build_adjmat(lindexPtr, data, con_map, par);
      build_nlinks(data, con_map, nlinks, par);
 
-     unsigned alpha_
+     unsigned alpha_change = 1e6;
+     double LL_bg_old = 0, LL_bg = -1e10, LL_fg_old = 0, LL_fg = -1e10;
+     bool LL_changed = true;
+     unsigned em_iter = 0;
+     vnl_vector<double> score_map(par.n_samples, 0);
+
+     /
