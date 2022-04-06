@@ -279,4 +279,11 @@ int main(int argc, char* argv[])
 
 	       // M step. Estimate parameters. 
 	       gmm_mstep(data, gmm_labels, alpha, ALPHA_FG, par.gmm_fg, cov_shared, cov_type);
-	       gmm_mstep(data, gmm_labels
+	       gmm_mstep(data, gmm_labels, alpha, ALPHA_BG, par.gmm_bg, cov_shared, cov_type);
+
+	       LL_fg_old = LL_fg;
+	       LL_bg_old = LL_bg;
+	       LL_fg = eval_ll(data, alpha, par.gmm_fg, ALPHA_FG);
+	       LL_bg = eval_ll(data, alpha, par.gmm_bg, ALPHA_BG);
+
+	    
