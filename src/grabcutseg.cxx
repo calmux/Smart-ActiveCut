@@ -270,4 +270,9 @@ int main(int argc, char* argv[])
 	  LL_changed = true;
 	  em_iter = 0;
 
-	  // in
+	  // innter loop: EM + graphcuts.
+	  while( (LL_changed ) && em_iter < maxem)
+	  {
+	       em_iter ++;
+	       gmm_estep(data, con_map, gmm_labels, alpha, ALPHA_FG, par.gmm_fg);
+	       gmm_estep(data, con
