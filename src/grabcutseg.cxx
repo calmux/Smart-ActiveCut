@@ -275,4 +275,8 @@ int main(int argc, char* argv[])
 	  {
 	       em_iter ++;
 	       gmm_estep(data, con_map, gmm_labels, alpha, ALPHA_FG, par.gmm_fg);
-	       gmm_estep(data, con
+	       gmm_estep(data, con_map, gmm_labels, alpha, ALPHA_BG, par.gmm_bg);
+
+	       // M step. Estimate parameters. 
+	       gmm_mstep(data, gmm_labels, alpha, ALPHA_FG, par.gmm_fg, cov_shared, cov_type);
+	       gmm_mstep(data, gmm_labels
