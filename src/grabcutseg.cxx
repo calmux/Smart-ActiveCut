@@ -297,4 +297,10 @@ int main(int argc, char* argv[])
 	  // compute predictive score. First compute the score without MRF (eta
 	  // = 0), then increase eta to refine the score map.
 	  logistic_init(score_map, data, con_map, alpha, par, 0, 1); // iter = 1
-	  logistic_init(score_map, data, con_map, alpha, par, 
+	  logistic_init(score_map, data, con_map, alpha, par, par.eta/4, 2); 
+	  logistic_init(score_map, data, con_map, alpha, par, par.eta/2, 4); 
+	  logistic(score_map, data, con_map, alpha, par);
+
+	  // ****** Active Learning begins here ************ //
+
+	  // update hard_con
