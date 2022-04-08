@@ -294,4 +294,7 @@ int main(int argc, char* argv[])
 	  } // inner loop finish.
 
 
-	  // compute predictive score. First compu
+	  // compute predictive score. First compute the score without MRF (eta
+	  // = 0), then increase eta to refine the score map.
+	  logistic_init(score_map, data, con_map, alpha, par, 0, 1); // iter = 1
+	  logistic_init(score_map, data, con_map, alpha, par, 
