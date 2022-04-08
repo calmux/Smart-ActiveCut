@@ -289,4 +289,9 @@ int main(int argc, char* argv[])
 	       LL_changed = ( fabs((LL_fg - LL_fg_old)/LL_fg_old) > EPS) || ( fabs((LL_bg - LL_bg_old)/LL_bg_old) > EPS) ; 
 
 	       // graphcuts segmentation. Update alpha.
-	       alpha_change = graphcuts(alpha, data, hard_constraint
+	       alpha_change = graphcuts(alpha, data, hard_constraints, nlinks,  par);
+	       printf("EM iter %i. number of voxels with alpha changed: %i\n", em_iter, alpha_change);
+	  } // inner loop finish.
+
+
+	  // compute predictive score. First compu
