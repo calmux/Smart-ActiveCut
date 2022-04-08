@@ -303,4 +303,11 @@ int main(int argc, char* argv[])
 
 	  // ****** Active Learning begins here ************ //
 
-	  // update hard_con
+	  // update hard_constraint image.
+	  if (par.baseline || noactlearn) {
+	       cont_var = false;
+	  }
+	  else {
+	       cont_var = update_hardconstraints(score_map, lindexPtr, alpha, initPtr, hard_constraints, par);
+	  }
+    
