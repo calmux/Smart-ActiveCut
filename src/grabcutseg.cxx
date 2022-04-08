@@ -286,4 +286,7 @@ int main(int argc, char* argv[])
 	       LL_fg = eval_ll(data, alpha, par.gmm_fg, ALPHA_FG);
 	       LL_bg = eval_ll(data, alpha, par.gmm_bg, ALPHA_BG);
 
-	    
+	       LL_changed = ( fabs((LL_fg - LL_fg_old)/LL_fg_old) > EPS) || ( fabs((LL_bg - LL_bg_old)/LL_bg_old) > EPS) ; 
+
+	       // graphcuts segmentation. Update alpha.
+	       alpha_change = graphcuts(alpha, data, hard_constraint
