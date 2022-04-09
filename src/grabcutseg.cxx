@@ -310,4 +310,11 @@ int main(int argc, char* argv[])
 	  else {
 	       cont_var = update_hardconstraints(score_map, lindexPtr, alpha, initPtr, hard_constraints, par);
 	  }
-    
+     } while(cont_var);
+     
+     // test print GMM parameters:
+     bool isFG = true;
+     print_gmm_to_file(par.gmm_fg, isFG);
+     print_gmm_to_file(par.gmm_bg, !isFG);
+
+     save_gmm_posterior(gmm_labels, pa
