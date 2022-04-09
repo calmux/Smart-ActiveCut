@@ -317,4 +317,6 @@ int main(int argc, char* argv[])
      print_gmm_to_file(par.gmm_fg, isFG);
      print_gmm_to_file(par.gmm_bg, !isFG);
 
-     save_gmm_posterior(gmm_labels, pa
+     save_gmm_posterior(gmm_labels, par, alpha, ALPHA_FG, lindexPtr, gmm_fg_file);
+     save_gmm_posterior(gmm_labels, par, alpha, ALPHA_BG, lindexPtr, gmm_bg_file);
+     save_gmm_labelmap(gmm_labels, par, alpha, ALPHA_FG, lindexPtr, fg_label_file);
