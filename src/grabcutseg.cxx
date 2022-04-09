@@ -320,3 +320,10 @@ int main(int argc, char* argv[])
      save_gmm_posterior(gmm_labels, par, alpha, ALPHA_FG, lindexPtr, gmm_fg_file);
      save_gmm_posterior(gmm_labels, par, alpha, ALPHA_BG, lindexPtr, gmm_bg_file);
      save_gmm_labelmap(gmm_labels, par, alpha, ALPHA_FG, lindexPtr, fg_label_file);
+     save_gmm_labelmap(gmm_labels, par, alpha, ALPHA_BG, lindexPtr, bg_label_file);
+
+     save_alpha(par, alpha, lindexPtr, alpha_file);
+     save_llmap(par, score_map, lindexPtr, score_file);
+     
+     return 0;
+}
