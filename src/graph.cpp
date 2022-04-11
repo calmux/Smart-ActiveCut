@@ -21,4 +21,13 @@ template <typename captype, typename tcaptype, typename flowtype>
 	if (!nodes || !arcs) { if (error_function) (*error_function)("Not enough memory!"); exit(1); }
 
 	node_last = nodes;
-	node_max = nodes + node_num_ma
+	node_max = nodes + node_num_max;
+	arc_last = arcs;
+	arc_max = arcs + 2*edge_num_max;
+
+	maxflow_iteration = 0;
+	flow = 0;
+}
+
+template <typename captype, typename tcaptype, typename flowtype> 
+	Graph<captype,tcaptype,flowtype>::~Graph()
