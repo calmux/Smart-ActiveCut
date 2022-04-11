@@ -42,4 +42,20 @@ template <typename captype, typename tcaptype, typename flowtype>
 }
 
 template <typename captype, typename tcaptype, typename flowtype> 
-	void Graph<captype,tcaptype,flowtype>::res
+	void Graph<captype,tcaptype,flowtype>::reset()
+{
+	node_last = nodes;
+	arc_last = arcs;
+	node_num = 0;
+
+	if (nodeptr_block) 
+	{ 
+		delete nodeptr_block; 
+		nodeptr_block = NULL; 
+	}
+
+	maxflow_iteration = 0;
+	flow = 0;
+}
+
+template <typename captype, typename tc
