@@ -65,3 +65,6 @@ template <typename captype, typename tcaptype, typename flowtype>
 	node* nodes_old = nodes;
 
 	node_num_max += node_num_max / 2;
+	if (node_num_max < node_num + num) node_num_max = node_num + num;
+	nodes = (node*) realloc(nodes_old, node_num_max*sizeof(node));
+	if (!nodes) { if (error_function) (*error_function)("Not enough memo
