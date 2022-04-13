@@ -77,4 +77,12 @@ template <typename captype, typename tcaptype, typename flowtype>
 		arc* a;
 		for (a=arcs; a<arc_last; a++)
 		{
-			a->head = (node*) ((char*)a->head + (((char*) nodes) 
+			a->head = (node*) ((char*)a->head + (((char*) nodes) - ((char*) nodes_old)));
+		}
+	}
+}
+
+template <typename captype, typename tcaptype, typename flowtype> 
+	void Graph<captype,tcaptype,flowtype>::reallocate_arcs()
+{
+	int arc_num_max = (int)(arc_max - arcs);
