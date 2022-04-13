@@ -86,3 +86,9 @@ template <typename captype, typename tcaptype, typename flowtype>
 	void Graph<captype,tcaptype,flowtype>::reallocate_arcs()
 {
 	int arc_num_max = (int)(arc_max - arcs);
+	int arc_num = (int)(arc_last - arcs);
+	arc* arcs_old = arcs;
+
+	arc_num_max += arc_num_max / 2; if (arc_num_max & 1) arc_num_max ++;
+	arcs = (arc*) realloc(arcs_old, arc_num_max*sizeof(arc));
+	if (!arcs) { if (error_fu
