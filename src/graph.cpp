@@ -58,4 +58,10 @@ template <typename captype, typename tcaptype, typename flowtype>
 	flow = 0;
 }
 
-template <typename captype, typename tc
+template <typename captype, typename tcaptype, typename flowtype> 
+	void Graph<captype,tcaptype,flowtype>::reallocate_nodes(int num)
+{
+	int node_num_max = (int)(node_max - nodes);
+	node* nodes_old = nodes;
+
+	node_num_max += node_num_max / 2;
