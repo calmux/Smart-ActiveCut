@@ -91,4 +91,15 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 	arc_num_max += arc_num_max / 2; if (arc_num_max & 1) arc_num_max ++;
 	arcs = (arc*) realloc(arcs_old, arc_num_max*sizeof(arc));
-	if (!arcs) { if (error_fu
+	if (!arcs) { if (error_function) (*error_function)("Not enough memory!"); exit(1); }
+
+	arc_last = arcs + arc_num;
+	arc_max = arcs + arc_num_max;
+
+	if (arcs != arcs_old)
+	{
+		node* i;
+		arc* a;
+		for (i=nodes; i<node_last; i++)
+		{
+			if 
