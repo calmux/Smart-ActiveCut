@@ -33,4 +33,8 @@ int build_adjmat(ImageType3DU::Pointer lindexPtr,
      // if current voxel is boundary between patch i and j, add one on
      // con_map(i,j). 
      unsigned offset = 0;
-     for (lin
+     for (lindexIt.GoToBegin(); !lindexIt.IsAtEnd(); ++ lindexIt) {
+	  if ( lindexIt.GetCenterPixel() > 0) {
+	       cur_vox_id = lindexIt.GetCenterPixel() - 1;
+	       
+	       for (unsigned neiIdx = 0; neiIdx < par.n_n
