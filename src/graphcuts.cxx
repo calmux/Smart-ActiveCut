@@ -22,4 +22,7 @@ int build_adjmat(ImageType3DU::Pointer lindexPtr,
      NeighborhoodIteratorType lindexIt(radius, lindexPtr, lindexPtr->GetLargestPossibleRegion());
      unsigned int nei_set_array[] = {4, 10, 12, 14, 16, 22, // 6 neighborhood
 				     1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25, // 18 neighborhood
-				  
+				     0, 2, 6, 8, 18, 20, 24, 26}; // 26 neighborhood
+
+     if (par.n_nbrs != 6 && par.n_nbrs != 18 && par.n_nbrs != 26) {
+	  printf("graphcuts(): number of neighbors must be 6, 18, or 26. Other values may give in
