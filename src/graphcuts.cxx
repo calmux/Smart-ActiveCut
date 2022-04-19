@@ -19,4 +19,7 @@ int build_adjmat(ImageType3DU::Pointer lindexPtr,
      typedef itk::NeighborhoodIterator< ImageType3DU, BoundaryConditionType > NeighborhoodIteratorType;
      NeighborhoodIteratorType::RadiusType radius;
      radius.Fill(1);
-     NeighborhoodIteratorT
+     NeighborhoodIteratorType lindexIt(radius, lindexPtr, lindexPtr->GetLargestPossibleRegion());
+     unsigned int nei_set_array[] = {4, 10, 12, 14, 16, 22, // 6 neighborhood
+				     1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25, // 18 neighborhood
+				  
