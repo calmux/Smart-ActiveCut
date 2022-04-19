@@ -25,4 +25,12 @@ int build_adjmat(ImageType3DU::Pointer lindexPtr,
 				     0, 2, 6, 8, 18, 20, 24, 26}; // 26 neighborhood
 
      if (par.n_nbrs != 6 && par.n_nbrs != 18 && par.n_nbrs != 26) {
-	  printf("graphcuts(): number of neighbors must be 6, 18, or 26. Other values may give in
+	  printf("graphcuts(): number of neighbors must be 6, 18, or 26. Other values may give inacruate results!\n");
+	  exit(1);
+     }
+
+     int cur_vox_id = 0, nbr_vox_id = 0;
+     // if current voxel is boundary between patch i and j, add one on
+     // con_map(i,j). 
+     unsigned offset = 0;
+     for (lin
