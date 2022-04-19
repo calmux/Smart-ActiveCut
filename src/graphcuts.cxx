@@ -15,4 +15,8 @@ int build_adjmat(ImageType3DU::Pointer lindexPtr,
      con_map.clear();
 
      // define neighborhood iterator
-     typedef itk::ConstantBoundaryCondition<ImageTy
+     typedef itk::ConstantBoundaryCondition<ImageType3DU>  BoundaryConditionType;
+     typedef itk::NeighborhoodIterator< ImageType3DU, BoundaryConditionType > NeighborhoodIteratorType;
+     NeighborhoodIteratorType::RadiusType radius;
+     radius.Fill(1);
+     NeighborhoodIteratorT
