@@ -37,4 +37,9 @@ int build_adjmat(ImageType3DU::Pointer lindexPtr,
 	  if ( lindexIt.GetCenterPixel() > 0) {
 	       cur_vox_id = lindexIt.GetCenterPixel() - 1;
 	       
-	       for (unsigned neiIdx = 0; neiIdx < par.n_n
+	       for (unsigned neiIdx = 0; neiIdx < par.n_nbrs; neiIdx ++) {
+		    offset = nei_set_array[neiIdx];
+		    nbr_vox_id =  lindexIt.GetPixel(offset) - 1;
+
+		    // make sure pair (i,j) only count once, since they are
+		    // ordered. Only upper triangular part of the m
