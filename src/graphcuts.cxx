@@ -42,4 +42,10 @@ int build_adjmat(ImageType3DU::Pointer lindexPtr,
 		    nbr_vox_id =  lindexIt.GetPixel(offset) - 1;
 
 		    // make sure pair (i,j) only count once, since they are
-		    // ordered. Only upper triangular part of the m
+		    // ordered. Only upper triangular part of the matrix is
+		    // filled.
+		    if ( (nbr_vox_id >= 0) && (nbr_vox_id > cur_vox_id) ) {
+			 con_map.put(cur_vox_id, nbr_vox_id, con_map(cur_vox_id, nbr_vox_id) + 1);
+		    }
+	       } // neiIdx
+	
