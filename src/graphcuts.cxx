@@ -48,4 +48,12 @@ int build_adjmat(ImageType3DU::Pointer lindexPtr,
 			 con_map.put(cur_vox_id, nbr_vox_id, con_map(cur_vox_id, nbr_vox_id) + 1);
 		    }
 	       } // neiIdx
-	
+	  } // in mask
+     }
+     return 0;
+}
+
+int build_nlinks(const vnl_matrix <double> & data, 
+		 const vnl_sparse_matrix <double> & con_map,
+		 vnl_sparse_matrix <double> & nlinks_map,
+		 ParTyp
