@@ -70,4 +70,10 @@ int build_nlinks(const vnl_matrix <double> & data,
      }
      par.beta = 0.5 * (1 / (beta_sum/n_edges) );
 
-     if (par.verbose >= 1)
+     if (par.verbose >= 1) 
+	  printf("build_nlinks(): beta = %f\n", par.beta);
+
+     // convert the adjacency information int N-Links weights. 
+     con_map.reset(); 
+     double new_value = 0;
+     nlinks_map.set_size(con_map.rows
