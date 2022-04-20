@@ -76,4 +76,10 @@ int build_nlinks(const vnl_matrix <double> & data,
      // convert the adjacency information int N-Links weights. 
      con_map.reset(); 
      double new_value = 0;
-     nlinks_map.set_size(con_map.rows
+     nlinks_map.set_size(con_map.rows(), con_map.cols());
+     while(con_map.next()) {
+	  // get the patch sample id of a pair of neighbors.
+	  row_id = con_map.getrow();
+	  col_id = con_map.getcolumn();
+	  
+	  // the affinity value. we need it be roughtly in the 
