@@ -56,4 +56,12 @@ int build_adjmat(ImageType3DU::Pointer lindexPtr,
 int build_nlinks(const vnl_matrix <double> & data, 
 		 const vnl_sparse_matrix <double> & con_map,
 		 vnl_sparse_matrix <double> & nlinks_map,
-		 ParTyp
+		 ParType & par)
+{
+     // compute beta. 
+     double beta_sum = 0, n_edges = 0;
+     unsigned row_id, col_id = 0;
+     con_map.reset(); 
+     while(con_map.next()) {
+	  row_id = con_map.getrow();
+	  col_id = con_
