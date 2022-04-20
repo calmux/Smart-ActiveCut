@@ -64,4 +64,10 @@ int build_nlinks(const vnl_matrix <double> & data,
      con_map.reset(); 
      while(con_map.next()) {
 	  row_id = con_map.getrow();
-	  col_id = con_
+	  col_id = con_map.getcolumn();
+	  beta_sum += (data.get_row(row_id) - data.get_row(col_id)).squared_magnitude();
+	  n_edges ++;
+     }
+     par.beta = 0.5 * (1 / (beta_sum/n_edges) );
+
+     if (par.verbose >= 1)
