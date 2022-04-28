@@ -90,4 +90,7 @@ int build_nlinks(const vnl_matrix <double> & data,
 
 	  // This may not well if two patches are long strips and close to each
 	  // other. In such case, the cube root is small and the aff value will
-	  
+	  // be big, often in range of [1, 20]. So, we should not set the gamma
+	  // value too big. Gamma need to be smaller than 2, otherwise the
+	  // neighboring links (nlinks_map just too strong such that the small
+	  // lesion (foreground)
