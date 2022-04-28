@@ -103,4 +103,11 @@ int build_nlinks(const vnl_matrix <double> & data,
 }
 
 unsigned graphcuts(vnl_vector<unsigned> & alpha,
-		   const vnl_matrix <double> & data
+		   const vnl_matrix <double> & data, 
+		   const vnl_vector <unsigned> & hard_constraints,
+		   const vnl_sparse_matrix <double> & nlinks_map,
+		   const ParType & par)
+{
+     unsigned sample_idx = 0;
+     Graph<double, double, double> G(1000, 1000);
+     unsigned
