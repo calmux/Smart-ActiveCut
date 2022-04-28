@@ -85,4 +85,9 @@ int build_nlinks(const vnl_matrix <double> & data,
 	  // the affinity value. we need it be roughtly in the range [0,
 	  // 1]. First cube rooting the size, and get the edge length of each
 	  // patch (roughtly, assuming a cube), then averaging two cube edge
-	  // lengths. The rasio of the neighborin
+	  // lengths. The rasio of the neighboring voxles (con_map) and the
+	  // averaged edge length will be in the range [0, 1], roughly. 
+
+	  // This may not well if two patches are long strips and close to each
+	  // other. In such case, the cube root is small and the aff value will
+	  
