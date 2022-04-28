@@ -96,4 +96,11 @@ int build_nlinks(const vnl_matrix <double> & data,
 	  // lesion (foreground) will be absorbed into huge backgorund in order
 	  // to acheieve smoothness). 
 	  double aff = con_map.value();
-	  new_value = par.gamma * aff * exp(- par.beta * par.beta0 * (data.get_row(row_id) - data.get_row(co
+	  new_value = par.gamma * aff * exp(- par.beta * par.beta0 * (data.get_row(row_id) - data.get_row(col_id)).squared_magnitude() );
+	  nlinks_map.put(row_id, col_id, new_value); 
+     };
+     return 0;
+}
+
+unsigned graphcuts(vnl_vector<unsigned> & alpha,
+		   const vnl_matrix <double> & data
