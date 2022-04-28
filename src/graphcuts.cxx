@@ -82,4 +82,7 @@ int build_nlinks(const vnl_matrix <double> & data,
 	  row_id = con_map.getrow();
 	  col_id = con_map.getcolumn();
 	  
-	  // the affinity value. we need it be roughtly in the 
+	  // the affinity value. we need it be roughtly in the range [0,
+	  // 1]. First cube rooting the size, and get the edge length of each
+	  // patch (roughtly, assuming a cube), then averaging two cube edge
+	  // lengths. The rasio of the neighborin
