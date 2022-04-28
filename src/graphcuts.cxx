@@ -93,4 +93,7 @@ int build_nlinks(const vnl_matrix <double> & data,
 	  // be big, often in range of [1, 20]. So, we should not set the gamma
 	  // value too big. Gamma need to be smaller than 2, otherwise the
 	  // neighboring links (nlinks_map just too strong such that the small
-	  // lesion (foreground)
+	  // lesion (foreground) will be absorbed into huge backgorund in order
+	  // to acheieve smoothness). 
+	  double aff = con_map.value();
+	  new_value = par.gamma * aff * exp(- par.beta * par.beta0 * (data.get_row(row_id) - data.get_row(co
