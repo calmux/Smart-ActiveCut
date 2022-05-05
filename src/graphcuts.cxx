@@ -110,4 +110,11 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 {
      unsigned sample_idx = 0;
      Graph<double, double, double> G(1000, 1000);
-     unsigned
+     unsigned n_samples = data.rows();
+     std::vector<unsigned> nodes(n_samples);
+     for (sample_idx = 0; sample_idx < n_samples; sample_idx ++) {
+	  nodes[sample_idx] = G.add_node();
+     }
+     
+     // assign tlink weights. 
+ 
