@@ -136,4 +136,11 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 	       bg_link = - gmm_eval_ll(data.get_row(sample_idx), par.gmm_fg, sample_idx);
 	  }
 
-	  G.add_tweights(nodes[samp
+	  G.add_tweights(nodes[sample_idx], fg_link, bg_link);
+     }
+
+     // assign nlink weights. 
+     int cur_node = 0, nbr_node = 0, sample_id1 = 0, sample_id2 = 0;
+     nlinks_map.reset(); 
+     while(nlinks_map.next()) {
+	
