@@ -121,4 +121,8 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
      for (sample_idx = 0; sample_idx < n_samples; sample_idx ++) {
 	  if (hard_constraints[sample_idx] == HC_FG) {
 	       bg_link = 0;
-	       fg_link = 
+	       fg_link = 6 * par.gamma + 1;
+	  }
+	  // either the initial background outside of bounding box (HC_BG), or the new
+	  // constraint learnt from self-training/active-learning (HC_BG_NEW).
+	  else if ((!par.baseline) && (hard_const
