@@ -125,4 +125,10 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 	  }
 	  // either the initial background outside of bounding box (HC_BG), or the new
 	  // constraint learnt from self-training/active-learning (HC_BG_NEW).
-	  else if ((!par.baseline) && (hard_const
+	  else if ((!par.baseline) && (hard_constraints[sample_idx] == HC_BG || hard_constraints[sample_idx] == HC_BG_NEW) ) {
+	       bg_link = 6 * par.gamma + 1;
+	       fg_link = 0;
+	  }
+	  else {
+	       // if baseline = true, allow BG-->FG.
+	       // must be unkno
