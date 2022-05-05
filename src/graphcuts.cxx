@@ -117,4 +117,8 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
      }
      
      // assign tlink weights. 
- 
+     double bg_link = 0, fg_link = 0;
+     for (sample_idx = 0; sample_idx < n_samples; sample_idx ++) {
+	  if (hard_constraints[sample_idx] == HC_FG) {
+	       bg_link = 0;
+	       fg_link = 
