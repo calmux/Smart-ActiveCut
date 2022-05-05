@@ -131,4 +131,9 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 	  }
 	  else {
 	       // if baseline = true, allow BG-->FG.
-	       // must be unkno
+	       // must be unknown region.
+	       fg_link = - gmm_eval_ll(data.get_row(sample_idx), par.gmm_bg, sample_idx);
+	       bg_link = - gmm_eval_ll(data.get_row(sample_idx), par.gmm_fg, sample_idx);
+	  }
+
+	  G.add_tweights(nodes[samp
