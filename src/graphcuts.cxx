@@ -143,4 +143,9 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
      int cur_node = 0, nbr_node = 0, sample_id1 = 0, sample_id2 = 0;
      nlinks_map.reset(); 
      while(nlinks_map.next()) {
-	
+	  // get the patch sample id of a pair of neighbors.
+	  sample_id1 = nlinks_map.getrow();
+	  sample_id2 = nlinks_map.getcolumn();
+	  cur_node = nodes[sample_id1];
+	  nbr_node = nodes[sample_id2];
+	  G.add_edge(cur_node,
