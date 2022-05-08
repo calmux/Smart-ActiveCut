@@ -148,4 +148,12 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 	  sample_id2 = nlinks_map.getcolumn();
 	  cur_node = nodes[sample_id1];
 	  nbr_node = nodes[sample_id2];
-	  G.add_edge(cur_node,
+	  G.add_edge(cur_node, nbr_node, nlinks_map(sample_id1, sample_id2), nlinks_map(sample_id1, sample_id2));
+     };
+
+     // compute min-cut, max-flow
+     G.maxflow();
+
+     // update alpha.
+     unsigned n_changes = 0;
+     int sink_name = Graph<
