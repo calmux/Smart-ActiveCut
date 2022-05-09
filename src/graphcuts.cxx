@@ -156,4 +156,10 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 
      // update alpha.
      unsigned n_changes = 0;
-     int sink_name = Graph<
+     int sink_name = Graph<double, double, double>::SINK;
+     int source_name = Graph<double, double, double>::SOURCE;
+     for (sample_idx = 0; sample_idx < n_samples; sample_idx ++) {
+	  unsigned old_value = alpha[sample_idx];
+
+	  if (par.baseline) {
+	    
