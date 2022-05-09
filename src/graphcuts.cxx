@@ -165,4 +165,13 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 	       // All are unknow regions in baseline mode, so they can freely
 	       // move into FG or BG. (actually there is no FG in
 	       // hard_constraint map (trimap) for now, so only BG can go into
-	       // F
+	       // FG).
+	       if (G.what_segment(nodes[sample_idx]) == Graph<double, double, double>::SOURCE)
+		    alpha[sample_idx] = ALPHA_FG;
+	       else
+		    alpha[sample_idx] = ALPHA_BG;
+	       
+	  }
+
+	  else {
+	       if (hard_constraints[s
