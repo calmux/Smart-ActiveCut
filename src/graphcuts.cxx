@@ -174,4 +174,9 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 	  }
 
 	  else {
-	       if (hard_constraints[s
+	       if (hard_constraints[sample_idx] == HC_FG) {
+		    // make sure maxfow do not change those constraints. 
+		    assert (G.what_segment(nodes[sample_idx]) == source_name);
+		    alpha[sample_idx] = ALPHA_FG;
+	       }
+	     
