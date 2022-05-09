@@ -162,4 +162,7 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 	  unsigned old_value = alpha[sample_idx];
 
 	  if (par.baseline) {
-	    
+	       // All are unknow regions in baseline mode, so they can freely
+	       // move into FG or BG. (actually there is no FG in
+	       // hard_constraint map (trimap) for now, so only BG can go into
+	       // F
