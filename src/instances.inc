@@ -10,4 +10,7 @@
 //    tcaptype should be 'larger' than captype
 
 template class Graph<int,int,int>;
-template cla
+template class Graph<short,int,int>;
+template class Graph<float,float,float>;
+template class Graph<double,double,double>;
+
