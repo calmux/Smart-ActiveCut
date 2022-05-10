@@ -181,4 +181,12 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 	       }
 	       else if (hard_constraints[sample_idx] == HC_BG | hard_constraints[sample_idx] == HC_BG_NEW) {
 		    assert(G.what_segment(nodes[sample_idx]) == sink_name);
-		    alpha[sample_idx] = ALPHA_BG
+		    alpha[sample_idx] = ALPHA_BG;
+	       }
+	       else {
+		    // unknow regions.
+		    if (G.what_segment(nodes[sample_idx]) == Graph<double, double, double>::SOURCE)
+			 alpha[sample_idx] = ALPHA_FG;
+		    else
+			 alpha[sample_idx] = ALPHA_BG;
+	       } // 
