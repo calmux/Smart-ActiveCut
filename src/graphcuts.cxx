@@ -179,4 +179,6 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 		    assert (G.what_segment(nodes[sample_idx]) == source_name);
 		    alpha[sample_idx] = ALPHA_FG;
 	       }
-	     
+	       else if (hard_constraints[sample_idx] == HC_BG | hard_constraints[sample_idx] == HC_BG_NEW) {
+		    assert(G.what_segment(nodes[sample_idx]) == sink_name);
+		    alpha[sample_idx] = ALPHA_BG
