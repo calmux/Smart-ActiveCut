@@ -189,4 +189,14 @@ unsigned graphcuts(vnl_vector<unsigned> & alpha,
 			 alpha[sample_idx] = ALPHA_FG;
 		    else
 			 alpha[sample_idx] = ALPHA_BG;
-	       } // 
+	       } // unknow regions.
+
+	  } // else baseline. 
+
+	  if (old_value != alpha[sample_idx])
+	       n_changes ++;
+     }
+
+     return n_changes;
+}
+
