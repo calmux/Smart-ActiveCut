@@ -9,4 +9,12 @@ int load_constraints(ImageType3DU::Pointer parcelPtr,
 		     const ParType & par);
 
 int load_priors(ImageType3DU::Pointer parcelPtr,
-		std::string prior
+		std::string prior_file,
+		vnl_matrix<double> & priors,
+		const ParType & par);
+
+
+int align_priors(vnl_matrix<double> & gmm_labels,
+		 const vnl_matrix<double> & priors,
+		 const vnl_vector<unsigned> & alpha,
+		 unsign
