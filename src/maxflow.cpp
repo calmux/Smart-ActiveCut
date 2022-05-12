@@ -17,4 +17,9 @@
 /***********************************************************************/
 
 /*
-	Functions 
+	Functions for processing active list.
+	i->next points to the next node in the list
+	(or to i, if i is the last node in the list).
+	If i->next is NULL iff i is not in the list.
+
+	There are two queues. Active nodes a
