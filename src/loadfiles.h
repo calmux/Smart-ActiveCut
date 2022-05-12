@@ -17,4 +17,5 @@ int load_priors(ImageType3DU::Pointer parcelPtr,
 int align_priors(vnl_matrix<double> & gmm_labels,
 		 const vnl_matrix<double> & priors,
 		 const vnl_vector<unsigned> & alpha,
-		 unsign
+		 unsigned whatground,
+		 const ParType & par);
