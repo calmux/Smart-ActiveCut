@@ -64,4 +64,10 @@ template <typename captype, typename tcaptype, typename flowtype>
 			if (!i) return NULL;
 		}
 
-		/* remove 
+		/* remove it from the active list */
+		if (i->next == i) queue_first[0] = queue_last[0] = NULL;
+		else              queue_first[0] = i -> next;
+		i -> next = NULL;
+
+		/* a node in the list is active iff it has a parent */
+		if (i->p
