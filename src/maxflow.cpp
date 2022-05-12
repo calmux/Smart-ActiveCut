@@ -46,4 +46,11 @@ template <typename captype, typename tcaptype, typename flowtype>
 /*
 	Returns the next active node.
 	If it is connected to the sink, it stays in the list,
-	otherwise it is removed from the
+	otherwise it is removed from the list
+*/
+template <typename captype, typename tcaptype, typename flowtype> 
+	inline typename Graph<captype,tcaptype,flowtype>::node* Graph<captype,tcaptype,flowtype>::next_active()
+{
+	node *i;
+
+	w
