@@ -22,4 +22,12 @@
 	(or to i, if i is the last node in the list).
 	If i->next is NULL iff i is not in the list.
 
-	There are two queues. Active nodes a
+	There are two queues. Active nodes are added
+	to the end of the second queue and read from
+	the front of the first queue. If the first queue
+	is empty, it is replaced by the second queue
+	(and the second queue becomes empty).
+*/
+
+
+template <typename captyp
