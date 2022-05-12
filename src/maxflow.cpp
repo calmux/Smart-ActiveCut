@@ -37,4 +37,13 @@ template <typename captype, typename tcaptype, typename flowtype>
 	{
 		/* it's not in the list yet */
 		if (queue_last[1]) queue_last[1] -> next = i;
-		else  
+		else               queue_first[1]        = i;
+		queue_last[1] = i;
+		i -> next = i;
+	}
+}
+
+/*
+	Returns the next active node.
+	If it is connected to the sink, it stays in the list,
+	otherwise it is removed from the
