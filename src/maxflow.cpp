@@ -53,4 +53,15 @@ template <typename captype, typename tcaptype, typename flowtype>
 {
 	node *i;
 
-	w
+	while ( 1 )
+	{
+		if (!(i=queue_first[0]))
+		{
+			queue_first[0] = i = queue_first[1];
+			queue_last[0]  = queue_last[1];
+			queue_first[1] = NULL;
+			queue_last[1]  = NULL;
+			if (!i) return NULL;
+		}
+
+		/* remove 
