@@ -30,4 +30,11 @@
 */
 
 
-template <typename captyp
+template <typename captype, typename tcaptype, typename flowtype> 
+	inline void Graph<captype,tcaptype,flowtype>::set_active(node *i)
+{
+	if (!i->next)
+	{
+		/* it's not in the list yet */
+		if (queue_last[1]) queue_last[1] -> next = i;
+		else  
