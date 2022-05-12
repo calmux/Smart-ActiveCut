@@ -70,4 +70,11 @@ template <typename captype, typename tcaptype, typename flowtype>
 		i -> next = NULL;
 
 		/* a node in the list is active iff it has a parent */
-		if (i->p
+		if (i->parent) return i;
+	}
+}
+
+/***********************************************************************/
+
+template <typename captype, typename tcaptype, typename flowtype> 
+	inline void Graph<captype,tcaptype,flowtype>:
