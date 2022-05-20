@@ -87,4 +87,11 @@ template <typename captype, typename tcaptype, typename flowtype>
 	orphan_first = np;
 }
 
-template <typename captype, typen
+template <typename captype, typename tcaptype, typename flowtype> 
+	inline void Graph<captype,tcaptype,flowtype>::set_orphan_rear(node *i)
+{
+	nodeptr *np;
+	i -> parent = ORPHAN;
+	np = nodeptr_block -> New();
+	np -> ptr = i;
+	if (orphan_last) orphan_la
