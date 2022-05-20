@@ -102,4 +102,10 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 /***********************************************************************/
 
-template <typename captype, typen
+template <typename captype, typename tcaptype, typename flowtype> 
+	inline void Graph<captype,tcaptype,flowtype>::add_to_changed_list(node *i)
+{
+	if (changed_list && !i->is_in_changed_list)
+	{
+		node_id* ptr = changed_list->New();
+		*ptr = (node_i
