@@ -94,4 +94,12 @@ template <typename captype, typename tcaptype, typename flowtype>
 	i -> parent = ORPHAN;
 	np = nodeptr_block -> New();
 	np -> ptr = i;
-	if (orphan_last) orphan_la
+	if (orphan_last) orphan_last -> next = np;
+	else             orphan_first        = np;
+	orphan_last = np;
+	np -> next = NULL;
+}
+
+/***********************************************************************/
+
+template <typename captype, typen
