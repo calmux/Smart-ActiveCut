@@ -108,4 +108,12 @@ template <typename captype, typename tcaptype, typename flowtype>
 	if (changed_list && !i->is_in_changed_list)
 	{
 		node_id* ptr = changed_list->New();
-		*ptr = (node_i
+		*ptr = (node_id)(i - nodes);
+		i->is_in_changed_list = true;
+	}
+}
+
+/***********************************************************************/
+
+template <typename captype, typename tcaptype, typename flowtype> 
+	void Gra
