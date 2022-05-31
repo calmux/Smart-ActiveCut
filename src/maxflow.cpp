@@ -128,3 +128,14 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 	for (i=nodes; i<node_last; i++)
 	{
+		i -> next = NULL;
+		i -> is_marked = 0;
+		i -> is_in_changed_list = 0;
+		i -> TS = TIME;
+		if (i->tr_cap > 0)
+		{
+			/* i is connected to the source */
+			i -> is_sink = 0;
+			i -> parent = TERMINAL;
+			set_active(i);
+			i -> 
