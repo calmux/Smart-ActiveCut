@@ -173,4 +173,19 @@ template <typename captype, typename tcaptype, typename flowtype>
 	while ((i=queue))
 	{
 		queue = i->next;
-		if (que
+		if (queue == i) queue = NULL;
+		i->next = NULL;
+		i->is_marked = 0;
+		set_active(i);
+
+		if (i->tr_cap == 0)
+		{
+			if (i->parent) set_orphan_rear(i);
+			continue;
+		}
+
+		if (i->tr_cap > 0)
+		{
+			if (!i->parent || i->is_sink)
+			{
+				i->i
