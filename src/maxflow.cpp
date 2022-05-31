@@ -116,4 +116,15 @@ template <typename captype, typename tcaptype, typename flowtype>
 /***********************************************************************/
 
 template <typename captype, typename tcaptype, typename flowtype> 
-	void Gra
+	void Graph<captype,tcaptype,flowtype>::maxflow_init()
+{
+	node *i;
+
+	queue_first[0] = queue_last[0] = NULL;
+	queue_first[1] = queue_last[1] = NULL;
+	orphan_first = NULL;
+
+	TIME = 0;
+
+	for (i=nodes; i<node_last; i++)
+	{
