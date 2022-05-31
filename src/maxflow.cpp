@@ -138,4 +138,21 @@ template <typename captype, typename tcaptype, typename flowtype>
 			i -> is_sink = 0;
 			i -> parent = TERMINAL;
 			set_active(i);
-			i -> 
+			i -> DIST = 1;
+		}
+		else if (i->tr_cap < 0)
+		{
+			/* i is connected to the sink */
+			i -> is_sink = 1;
+			i -> parent = TERMINAL;
+			set_active(i);
+			i -> DIST = 1;
+		}
+		else
+		{
+			i -> parent = NULL;
+		}
+	}
+}
+
+template <typena
