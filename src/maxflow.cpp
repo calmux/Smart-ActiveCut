@@ -155,4 +155,11 @@ template <typename captype, typename tcaptype, typename flowtype>
 	}
 }
 
-template <typena
+template <typename captype, typename tcaptype, typename flowtype> 
+	void Graph<captype,tcaptype,flowtype>::maxflow_reuse_trees_init()
+{
+	node* i;
+	node* j;
+	node* queue = queue_first[1];
+	arc* a;
+	nodeptr*
