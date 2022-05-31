@@ -195,4 +195,18 @@ template <typename captype, typename tcaptype, typename flowtype>
 					if (!j->is_marked)
 					{
 						if (j->parent == a->sister) set_orphan_rear(j);
-						if (j->parent && j->is_sink && a->r_cap > 0) s
+						if (j->parent && j->is_sink && a->r_cap > 0) set_active(j);
+					}
+				}
+				add_to_changed_list(i);
+			}
+		}
+		else
+		{
+			if (!i->parent || !i->is_sink)
+			{
+				i->is_sink = 1;
+				for (a=i->first; a; a=a->next)
+				{
+					j = a->head;
+					if (!j->is_marked
