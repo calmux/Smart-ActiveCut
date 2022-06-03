@@ -240,4 +240,14 @@ template <typename captype, typename tcaptype, typename flowtype>
 	//test_consistency();
 }
 
-template <typename captype, typename tcaptype, typename flowt
+template <typename captype, typename tcaptype, typename flowtype> 
+	void Graph<captype,tcaptype,flowtype>::augment(arc *middle_arc)
+{
+	node *i;
+	arc *a;
+	tcaptype bottleneck;
+
+
+	/* 1. Finding bottleneck capacity */
+	/* 1a - the source tree */
+	bottl
