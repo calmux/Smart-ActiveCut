@@ -209,4 +209,14 @@ template <typename captype, typename tcaptype, typename flowtype>
 				for (a=i->first; a; a=a->next)
 				{
 					j = a->head;
-					if (!j->is_marked
+					if (!j->is_marked)
+					{
+						if (j->parent == a->sister) set_orphan_rear(j);
+						if (j->parent && !j->is_sink && a->sister->r_cap > 0) set_active(j);
+					}
+				}
+				add_to_changed_list(i);
+			}
+		}
+		i->parent = TERMINAL;
+		i
