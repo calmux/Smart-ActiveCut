@@ -219,4 +219,16 @@ template <typename captype, typename tcaptype, typename flowtype>
 			}
 		}
 		i->parent = TERMINAL;
-		i
+		i -> TS = TIME;
+		i -> DIST = 1;
+	}
+
+	//test_consistency();
+
+	/* adoption */
+	while ((np=orphan_first))
+	{
+		orphan_first = np -> next;
+		i = np -> ptr;
+		nodeptr_block -> Delete(np);
+		if (!orphan_fi
