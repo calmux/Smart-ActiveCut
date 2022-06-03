@@ -250,4 +250,11 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 	/* 1. Finding bottleneck capacity */
 	/* 1a - the source tree */
-	bottl
+	bottleneck = middle_arc -> r_cap;
+	for (i=middle_arc->sister->head; ; i=a->head)
+	{
+		a = i -> parent;
+		if (a == TERMINAL) break;
+		if (bottleneck > a->sister->r_cap) bottleneck = a -> sister -> r_cap;
+	}
+	if (bottleneck > i->
