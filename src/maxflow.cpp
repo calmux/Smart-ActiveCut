@@ -257,4 +257,12 @@ template <typename captype, typename tcaptype, typename flowtype>
 		if (a == TERMINAL) break;
 		if (bottleneck > a->sister->r_cap) bottleneck = a -> sister -> r_cap;
 	}
-	if (bottleneck > i->
+	if (bottleneck > i->tr_cap) bottleneck = i -> tr_cap;
+	/* 1b - the sink tree */
+	for (i=middle_arc->head; ; i=a->head)
+	{
+		a = i -> parent;
+		if (a == TERMINAL) break;
+		if (bottleneck > a->r_cap) bottleneck = a -> r_cap;
+	}
+	if (bottleneck > -
