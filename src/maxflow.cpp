@@ -272,4 +272,12 @@ template <typename captype, typename tcaptype, typename flowtype>
 	/* 2a - the source tree */
 	middle_arc -> sister -> r_cap += bottleneck;
 	middle_arc -> r_cap -= bottleneck;
-	for (i=middle_arc->sister-
+	for (i=middle_arc->sister->head; ; i=a->head)
+	{
+		a = i -> parent;
+		if (a == TERMINAL) break;
+		a -> r_cap += bottleneck;
+		a -> sister -> r_cap -= bottleneck;
+		if (!a->sister->r_cap)
+		{
+			set_orphan_front(i); // add 
