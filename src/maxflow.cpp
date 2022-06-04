@@ -265,4 +265,11 @@ template <typename captype, typename tcaptype, typename flowtype>
 		if (a == TERMINAL) break;
 		if (bottleneck > a->r_cap) bottleneck = a -> r_cap;
 	}
-	if (bottleneck > -
+	if (bottleneck > - i->tr_cap) bottleneck = - i -> tr_cap;
+
+
+	/* 2. Augmenting */
+	/* 2a - the source tree */
+	middle_arc -> sister -> r_cap += bottleneck;
+	middle_arc -> r_cap -= bottleneck;
+	for (i=middle_arc->sister-
