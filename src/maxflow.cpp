@@ -289,4 +289,12 @@ template <typename captype, typename tcaptype, typename flowtype>
 		set_orphan_front(i); // add i to the beginning of the adoption list
 	}
 	/* 2b - the sink tree */
-	for (i=m
+	for (i=middle_arc->head; ; i=a->head)
+	{
+		a = i -> parent;
+		if (a == TERMINAL) break;
+		a -> sister -> r_cap += bottleneck;
+		a -> r_cap -= bottleneck;
+		if (!a->r_cap)
+		{
+			set_orphan_front(i); // add i to the beginnin
