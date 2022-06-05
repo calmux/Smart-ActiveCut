@@ -310,4 +310,11 @@ template <typename captype, typename tcaptype, typename flowtype>
 	flow += bottleneck;
 }
 
-/****************************************
+/***********************************************************************/
+
+template <typename captype, typename tcaptype, typename flowtype> 
+	void Graph<captype,tcaptype,flowtype>::process_source_orphan(node *i)
+{
+	node *j;
+	arc *a0, *a0_min = NULL, *a;
+	int d
