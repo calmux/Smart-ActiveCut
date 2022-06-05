@@ -280,4 +280,13 @@ template <typename captype, typename tcaptype, typename flowtype>
 		a -> sister -> r_cap -= bottleneck;
 		if (!a->sister->r_cap)
 		{
-			set_orphan_front(i); // add 
+			set_orphan_front(i); // add i to the beginning of the adoption list
+		}
+	}
+	i -> tr_cap -= bottleneck;
+	if (!i->tr_cap)
+	{
+		set_orphan_front(i); // add i to the beginning of the adoption list
+	}
+	/* 2b - the sink tree */
+	for (i=m
