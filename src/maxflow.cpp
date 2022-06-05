@@ -297,4 +297,17 @@ template <typename captype, typename tcaptype, typename flowtype>
 		a -> r_cap -= bottleneck;
 		if (!a->r_cap)
 		{
-			set_orphan_front(i); // add i to the beginnin
+			set_orphan_front(i); // add i to the beginning of the adoption list
+		}
+	}
+	i -> tr_cap += bottleneck;
+	if (!i->tr_cap)
+	{
+		set_orphan_front(i); // add i to the beginning of the adoption list
+	}
+
+
+	flow += bottleneck;
+}
+
+/****************************************
