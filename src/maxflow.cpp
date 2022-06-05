@@ -317,4 +317,13 @@ template <typename captype, typename tcaptype, typename flowtype>
 {
 	node *j;
 	arc *a0, *a0_min = NULL, *a;
-	int d
+	int d, d_min = INFINITE_D;
+
+	/* trying to find a new parent */
+	for (a0=i->first; a0; a0=a0->next)
+	if (a0->sister->r_cap)
+	{
+		j = a0 -> head;
+		if (!j->is_sink && (a=j->parent))
+		{
+			/* check
