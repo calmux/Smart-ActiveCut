@@ -326,4 +326,18 @@ template <typename captype, typename tcaptype, typename flowtype>
 		j = a0 -> head;
 		if (!j->is_sink && (a=j->parent))
 		{
-			/* check
+			/* checking the origin of j */
+			d = 0;
+			while ( 1 )
+			{
+				if (j->TS == TIME)
+				{
+					d += j -> DIST;
+					break;
+				}
+				a = j -> parent;
+				d ++;
+				if (a==TERMINAL)
+				{
+					j -> TS = TIME;
+					j -
