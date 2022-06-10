@@ -364,3 +364,17 @@ template <typename captype, typename tcaptype, typename flowtype>
 	}
 
 	if (i->parent = a0_min)
+	{
+		i -> TS = TIME;
+		i -> DIST = d_min + 1;
+	}
+	else
+	{
+		/* no parent is found */
+		add_to_changed_list(i);
+
+		/* process neighbors */
+		for (a0=i->first; a0; a0=a0->next)
+		{
+			j = a0 -> head;
+			if (!j->is_sink && (a=
