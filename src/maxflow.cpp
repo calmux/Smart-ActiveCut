@@ -420,4 +420,14 @@ template <typename captype, typename tcaptype, typename flowtype>
 					j -> DIST = 1;
 					break;
 				}
-				if (a==ORPHAN) { d = INFINITE_D;
+				if (a==ORPHAN) { d = INFINITE_D; break; }
+				j = a -> head;
+			}
+			if (d<INFINITE_D) /* j originates from the sink - done */
+			{
+				if (d<d_min)
+				{
+					a0_min = a0;
+					d_min = d;
+				}
+				/* set marks along the path */
