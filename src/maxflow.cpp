@@ -431,3 +431,20 @@ template <typename captype, typename tcaptype, typename flowtype>
 					d_min = d;
 				}
 				/* set marks along the path */
+				for (j=a0->head; j->TS!=TIME; j=j->parent->head)
+				{
+					j -> TS = TIME;
+					j -> DIST = d --;
+				}
+			}
+		}
+	}
+
+	if (i->parent = a0_min)
+	{
+		i -> TS = TIME;
+		i -> DIST = d_min + 1;
+	}
+	else
+	{
+		/* no parent is f
