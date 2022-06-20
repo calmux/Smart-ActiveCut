@@ -396,4 +396,15 @@ template <typename captype, typename tcaptype, typename flowtype>
 	arc *a0, *a0_min = NULL, *a;
 	int d, d_min = INFINITE_D;
 
-	/* trying t
+	/* trying to find a new parent */
+	for (a0=i->first; a0; a0=a0->next)
+	if (a0->r_cap)
+	{
+		j = a0 -> head;
+		if (j->is_sink && (a=j->parent))
+		{
+			/* checking the origin of j */
+			d = 0;
+			while ( 1 )
+			{
+				if (j->TS == TIM
