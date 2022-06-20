@@ -407,4 +407,17 @@ template <typename captype, typename tcaptype, typename flowtype>
 			d = 0;
 			while ( 1 )
 			{
-				if (j->TS == TIM
+				if (j->TS == TIME)
+				{
+					d += j -> DIST;
+					break;
+				}
+				a = j -> parent;
+				d ++;
+				if (a==TERMINAL)
+				{
+					j -> TS = TIME;
+					j -> DIST = 1;
+					break;
+				}
+				if (a==ORPHAN) { d = INFINITE_D;
