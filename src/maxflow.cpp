@@ -447,4 +447,14 @@ template <typename captype, typename tcaptype, typename flowtype>
 	}
 	else
 	{
-		/* no parent is f
+		/* no parent is found */
+		add_to_changed_list(i);
+
+		/* process neighbors */
+		for (a0=i->first; a0; a0=a0->next)
+		{
+			j = a0 -> head;
+			if (j->is_sink && (a=j->parent))
+			{
+				if (a0->r_cap) set_active(j);
+	
