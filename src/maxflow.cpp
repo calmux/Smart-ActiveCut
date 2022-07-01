@@ -468,4 +468,9 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 /***********************************************************************/
 
-t
+template <typename captype, typename tcaptype, typename flowtype> 
+	flowtype Graph<captype,tcaptype,flowtype>::maxflow(bool reuse_trees, Block<node_id>* _changed_list)
+{
+	node *i, *j, *current_node = NULL;
+	arc *a;
+	nodeptr *np
