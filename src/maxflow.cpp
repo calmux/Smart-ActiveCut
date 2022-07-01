@@ -457,4 +457,15 @@ template <typename captype, typename tcaptype, typename flowtype>
 			if (j->is_sink && (a=j->parent))
 			{
 				if (a0->r_cap) set_active(j);
-	
+				if (a!=TERMINAL && a!=ORPHAN && a->head==i)
+				{
+					set_orphan_rear(j); // add j to the end of the adoption list
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************/
+
+t
