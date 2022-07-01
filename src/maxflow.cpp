@@ -473,4 +473,12 @@ template <typename captype, typename tcaptype, typename flowtype>
 {
 	node *i, *j, *current_node = NULL;
 	arc *a;
-	nodeptr *np
+	nodeptr *np, *np_next;
+
+	if (!nodeptr_block)
+	{
+		nodeptr_block = new DBlock<nodeptr>(NODEPTR_BLOCK_SIZE, error_function);
+	}
+
+	changed_list = _changed_list;
+	if (maxflow_iteration == 0 && reuse_trees) { if (error_function
