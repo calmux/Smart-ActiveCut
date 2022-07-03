@@ -481,4 +481,5 @@ template <typename captype, typename tcaptype, typename flowtype>
 	}
 
 	changed_list = _changed_list;
-	if (maxflow_iteration == 0 && reuse_trees) { if (error_function
+	if (maxflow_iteration == 0 && reuse_trees) { if (error_function) (*error_function)("reuse_trees cannot be used in the first call to maxflow()!"); exit(1); }
+	if (changed_list && !reuse_trees) { if (error_function) (*error_function)("changed_list cannot be used without reuse_trees!"); exit(1); }
