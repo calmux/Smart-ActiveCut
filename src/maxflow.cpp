@@ -495,3 +495,18 @@ template <typename captype, typename tcaptype, typename flowtype>
 		if ((i=current_node))
 		{
 			i -> next = NULL; /* remove active flag */
+			if (!i->parent) i = NULL;
+		}
+		if (!i)
+		{
+			if (!(i = next_active())) break;
+		}
+
+		/* growth */
+		if (!i->is_sink)
+		{
+			/* grow source tree */
+			for (a=i->first; a; a=a->next)
+			if (a->r_cap)
+			{
+				j = a -
