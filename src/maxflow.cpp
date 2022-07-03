@@ -525,4 +525,18 @@ template <typename captype, typename tcaptype, typename flowtype>
 				{
 					/* heuristic - trying to make the distance from j to the source shorter */
 					j -> parent = a -> sister;
-				
+					j -> TS = i -> TS;
+					j -> DIST = i -> DIST + 1;
+				}
+			}
+		}
+		else
+		{
+			/* grow sink tree */
+			for (a=i->first; a; a=a->next)
+			if (a->sister->r_cap)
+			{
+				j = a -> head;
+				if (!j->parent)
+				{
+					j -> 
