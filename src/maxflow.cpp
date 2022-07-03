@@ -509,4 +509,14 @@ template <typename captype, typename tcaptype, typename flowtype>
 			for (a=i->first; a; a=a->next)
 			if (a->r_cap)
 			{
-				j = a -
+				j = a -> head;
+				if (!j->parent)
+				{
+					j -> is_sink = 0;
+					j -> parent = a -> sister;
+					j -> TS = i -> TS;
+					j -> DIST = i -> DIST + 1;
+					set_active(j);
+					add_to_changed_list(j);
+				}
+				else if (j->is_sin
