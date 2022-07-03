@@ -519,4 +519,10 @@ template <typename captype, typename tcaptype, typename flowtype>
 					set_active(j);
 					add_to_changed_list(j);
 				}
-				else if (j->is_sin
+				else if (j->is_sink) break;
+				else if (j->TS <= i->TS &&
+				         j->DIST > i->DIST)
+				{
+					/* heuristic - trying to make the distance from j to the source shorter */
+					j -> parent = a -> sister;
+				
