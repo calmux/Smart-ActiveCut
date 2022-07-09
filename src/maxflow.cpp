@@ -553,4 +553,23 @@ template <typename captype, typename tcaptype, typename flowtype>
 					/* heuristic - trying to make the distance from j to the sink shorter */
 					j -> parent = a -> sister;
 					j -> TS = i -> TS;
-				
+					j -> DIST = i -> DIST + 1;
+				}
+			}
+		}
+
+		TIME ++;
+
+		if (a)
+		{
+			i -> next = i; /* set active flag */
+			current_node = i;
+
+			/* augmentation */
+			augment(a);
+			/* augmentation end */
+
+			/* adoption */
+			while ((np=orphan_first))
+			{
+	
