@@ -539,4 +539,11 @@ template <typename captype, typename tcaptype, typename flowtype>
 				j = a -> head;
 				if (!j->parent)
 				{
-					j -> 
+					j -> is_sink = 1;
+					j -> parent = a -> sister;
+					j -> TS = i -> TS;
+					j -> DIST = i -> DIST + 1;
+					set_active(j);
+					add_to_changed_list(j);
+				}
+				else if (!j->is_sink) { a = a -> sister;
