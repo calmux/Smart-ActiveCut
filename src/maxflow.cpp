@@ -572,4 +572,12 @@ template <typename captype, typename tcaptype, typename flowtype>
 			/* adoption */
 			while ((np=orphan_first))
 			{
-	
+				np_next = np -> next;
+				np -> next = NULL;
+
+				while ((np=orphan_first))
+				{
+					orphan_first = np -> next;
+					i = np -> ptr;
+					nodeptr_block -> Delete(np);
+					if (!orphan_first) orphan_last
