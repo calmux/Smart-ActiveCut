@@ -591,4 +591,16 @@ template <typename captype, typename tcaptype, typename flowtype>
 		}
 		else current_node = NULL;
 	}
-	// test_
+	// test_consistency();
+
+	if (!reuse_trees || (maxflow_iteration % 64) == 0)
+	{
+		delete nodeptr_block; 
+		nodeptr_block = NULL; 
+	}
+
+	maxflow_iteration ++;
+	return flow;
+}
+
+/*****************************
