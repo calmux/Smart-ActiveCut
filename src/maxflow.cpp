@@ -603,4 +603,8 @@ template <typename captype, typename tcaptype, typename flowtype>
 	return flow;
 }
 
-/*****************************
+/***********************************************************************/
+
+
+template <typename captype, typename tcaptype, typename flowtype> 
+	void Graph<captype,tcaptype,flowtype>::test_consistency(node* curren
