@@ -580,4 +580,15 @@ template <typename captype, typename tcaptype, typename flowtype>
 					orphan_first = np -> next;
 					i = np -> ptr;
 					nodeptr_block -> Delete(np);
-					if (!orphan_first) orphan_last
+					if (!orphan_first) orphan_last = NULL;
+					if (i->is_sink) process_sink_orphan(i);
+					else            process_source_orphan(i);
+				}
+
+				orphan_first = np_next;
+			}
+			/* adoption end */
+		}
+		else current_node = NULL;
+	}
+	// test_
