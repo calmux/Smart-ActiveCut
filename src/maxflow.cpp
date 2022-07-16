@@ -607,4 +607,14 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 
 template <typename captype, typename tcaptype, typename flowtype> 
-	void Graph<captype,tcaptype,flowtype>::test_consistency(node* curren
+	void Graph<captype,tcaptype,flowtype>::test_consistency(node* current_node)
+{
+	node *i;
+	arc *a;
+	int r;
+	int num1 = 0, num2 = 0;
+
+	// test whether all nodes i with i->next!=NULL are indeed in the queue
+	for (i=nodes; i<node_last; i++)
+	{
+		if (i->next || i==current_node) nu
