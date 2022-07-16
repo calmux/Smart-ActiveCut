@@ -617,4 +617,16 @@ template <typename captype, typename tcaptype, typename flowtype>
 	// test whether all nodes i with i->next!=NULL are indeed in the queue
 	for (i=nodes; i<node_last; i++)
 	{
-		if (i->next || i==current_node) nu
+		if (i->next || i==current_node) num1 ++;
+	}
+	for (r=0; r<3; r++)
+	{
+		i = (r == 2) ? current_node : queue_first[r];
+		if (i)
+		for ( ; ; i=i->next)
+		{
+			num2 ++;
+			if (i->next == i)
+			{
+				if (r<2) assert(i == queue_last[r]);
+				el
