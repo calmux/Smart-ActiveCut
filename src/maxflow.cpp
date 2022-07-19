@@ -657,4 +657,13 @@ template <typename captype, typename tcaptype, typename flowtype>
 		{
 			if (!i->is_sink)
 			{
-				assert(i->
+				assert(i->tr_cap >= 0);
+				for (a=i->first; a; a=a->next)
+				{
+					if (a->r_cap > 0) assert(a->head->parent && !a->head->is_sink);
+				}
+			}
+			else
+			{
+				assert(i->tr_cap <= 0);
+				for (a=i->first; a; a=a->next)
