@@ -473,3 +473,237 @@ bool computeShapeScoreforCcpCandidates (ImageType3DI::Pointer ccpPredictProb,
 		    }
 	       }
 	  }
+	  
+	  
+	  // std::string test_save_1 = "test_CurrentCCPVolume.nii.gz";
+	  // WriterType3DUC::Pointer writer = WriterType3DUC::New();
+	  // writer->SetFileName( test_save_1 );
+	  // writer->SetInput( curCCPLabel ) ;
+	  // writer->Update();
+	  
+
+	  // Step 2: erosion
+	  typedef itk::BinaryBallStructuringElement<PixelType3DUC, Dimension> StructuringElementType;
+	  typedef itk::BinaryErodeImageFilter<ImageType3DUC, ImageType3DUC, StructuringElementType> ErodeFilterType;
+	  
+	  ErodeFilterType::Pointer binaryErode = ErodeFilterType::New();
+
+	  StructuringElementType structuringElement;
+
+	  structuringElement.SetRadius( 1 ); // 3x3 structuring element
+	  structuringElement.CreateStructuringElement();
+	  binaryErode->SetKernel( structuringElement );
+	  binaryErode->SetInput( curCCPLabel );
+	  binaryErode->SetErodeValue( 1 );
+
+	  // duplicator doesn't work!
+	  /*
+	  typedef itk::ImageDuplicator< ImageType3DUC > DuplicatorType;
+	  DuplicatorType::Pointer duplicator = DuplicatorType::New();
+	  duplicator->SetInputImage(binaryErode->GetOutput());
+	  duplicator->Update();
+	  ImageType3DUC::Pointer curCCPLabelErosion = duplicator->GetOutput();
+	  */
+
+	  // Note: the following code to save the rosion volume is to prevent
+	  // segmentation fault error
+	  
+	  ImageType3DUC::Pointer curCCPLabelErosion = ImageType3DUC::New();
+	  curCCPLabelErosion->SetRegions(outRegion);
+	  curCCPLabelErosion->Allocate();
+	  curCCPLabelErosion->FillBuffer( 0 );
+	  curCCPLabelErosion = binaryErode->GetOutput();
+	  std::string test_save_2 = "test_CurrentCCPVolume_erosion.nii.gz";
+	  WriterType3DUC::Pointer writer2 = WriterType3DUC::New();
+	  writer2->SetFileName( test_save_2 );
+	  writer2->SetInput( curCCPLabelErosion ) ;
+	  writer2->Update();
+
+
+	  // step 3: original binary - erosion = the boundary voxels
+	  //       : & count the boundary voxels
+	  ImageType3DUC::Pointer curCCPLabelBoundary = ImageType3DUC::New();
+	  curCCPLabelBoundary->SetRegions(outRegion);
+	  curCCPLabelBoundary->Allocate();
+	  curCCPLabelBoundary->FillBuffer( 0 );
+
+	  ImageType3DUC::IndexType ccpIndexUC;
+	  ImageType3DUC::PixelType ccpLabelValueUC_ori,ccpLabelValueUC_ero;
+	  
+	  int countNumBoundary = 0;
+	  for(k=0; k<slice; k++)
+	  {
+	       for(j=0; j<height; j++)
+	       {
+		    for(i=0; i<width; i++)
+		    {
+
+			 ccpLabelValueUC_ori = 0;
+			 ccpLabelValueUC_ero = 0;
+			 ccpIndexUC[0] = i;
+			 ccpIndexUC[1] = j;
+			 ccpIndexUC[2] = k;
+			 ccpLabelValueUC_ori = curCCPLabel->GetPixel( ccpIndexUC );
+			 ccpLabelValueUC_ero = curCCPLabelErosion->GetPixel( ccpIndexUC );
+
+			 if(ccpLabelValueUC_ori > 0 && ccpLabelValueUC_ero < 1)
+			 {
+			      curCCPLabelBoundary->SetPixel(ccpIndexUC, 1 );
+			      countNumBoundary++;
+			 }
+		    }
+	       }
+	  }
+
+	  
+	  // std::string test_save_3 = "test_CurrentCCPVolume_boundary.nii.gz";
+	  // WriterType3DUC::Pointer writer3 = WriterType3DUC::New();
+	  // writer3->SetFileName( test_save_3 );
+	  // writer3->SetInput( curCCPLabelBoundary ) ;
+	  // writer3->Update();
+	  
+
+	  // compute the score for rank the top K connected components
+
+	  curShapeScore = float(ccpVectorPairs[n].first) / float(countNumBoundary);
+	  //curVolumeMultiplyProb = float(ccpVectorPairs[n].first) * allConnectedComponents[curLabelValue].avgPredictProb;
+	  //curScoreCriteria = curVolumeMultiplyProb +			\
+	  //     float(ccpVectorPairs[n].first) *  curShapeScore * curShapeScore * curShapeScore;
+	  curScoreCriteria = curShapeScore;
+	 
+	  cout << " Num of boundary voxel for current CCP: "<< countNumBoundary << std::endl ;
+	  cout << " Shape score for current CCP: "<< curShapeScore << std::endl ;
+	  //cout << " Volume multiply Prob.: "<< curVolumeMultiplyProb << std::endl ;
+	  cout << " Score for current CCP: "<< curScoreCriteria << std::endl ;
+	  cout << " ---------------------- " << std::endl ;
+
+	  // create new pair
+	  ccpTopPair[n].first = curScoreCriteria;
+	  ccpTopPair[n].second = ccpVectorPairs[n].second;
+	  
+     }
+
+     // sort the ccpTopPair
+     
+     std::vector< pair<float, int> > ccpTopVectorPairs (ccpTopPair, ccpTopPair+numTopCcptoEvaluate);
+     std::sort (ccpTopVectorPairs.begin(), ccpTopVectorPairs.end(), myComparatorforCcpFI);
+     
+     // create a volume for true candidates
+     ImageType3DUC::Pointer trueCandidatesVolume = ImageType3DUC::New();
+     trueCandidatesVolume->SetRegions(outRegion);
+     trueCandidatesVolume->Allocate();
+     trueCandidatesVolume->FillBuffer( 0 );
+
+     // print newly sorted ccpTopPair
+     ImageType3DUC::IndexType imageIndexUC;
+
+     int countNumCCPsatisfyShapeCriteria = 0;
+
+     cout << "=================== " << std::endl;
+     for(n=0; n<numTopCcptoEvaluate; n++)
+     {
+	  cout << " Label: "<<  ccpTopVectorPairs[n].second << " |  Score: " << ccpTopVectorPairs[n].first;
+	  
+	  curLabelValue = ccpTopVectorPairs[n].second;
+
+	  cout << " | Volume: "<< allConnectedComponents[curLabelValue-1].volumeSize << std::endl ;
+
+	  if(ccpTopVectorPairs[n].first > thresholdScoreforTopCandidates)
+	  {
+	       cout << "This connected component's score is larger than the user-input threshold." << std::endl;
+	       cout << std::endl;
+
+	       countNumCCPsatisfyShapeCriteria++;
+	       // add the label of this connected component to true candidates label volume
+	       for(k=0; k<slice; k++)
+	       {
+		    for(j=0; j<height; j++)
+		    {
+			 for(i=0; i<width; i++)
+			 {
+			      ccpLabelValue = 0;
+			      ccpIndex[0] = i;
+			      ccpIndex[1] = j;
+			      ccpIndex[2] = k;
+			      ccpLabelValue = ccpPredictProb->GetPixel( ccpIndex );
+			      
+			      imageIndexUC[0] = i;
+			      imageIndexUC[1] = j;
+			      imageIndexUC[2] = k;
+
+			      if(curLabelValue == ccpLabelValue)
+			      {
+				   trueCandidatesVolume->SetPixel(imageIndexUC, 1 );
+			      }
+			 }
+		    }
+	       }
+	  }
+
+     }
+     cout << "=================== " << std::endl;
+
+     // In case that countNumCCPsatisfyShapeCriteria == 0,
+     // no single CCP satisfies the criteria so ask user
+
+     bool stop_doing_activeLearning = false;
+
+     int countNumThisCCPisTrueCandidate = 0;
+
+     if(countNumCCPsatisfyShapeCriteria == 0)
+     {
+
+	  ImageType3DUC::Pointer PossibleCandidatesVolumeToAskUser = ImageType3DUC::New();
+	  PossibleCandidatesVolumeToAskUser->SetRegions(outRegion);
+	  PossibleCandidatesVolumeToAskUser->Allocate();
+	  PossibleCandidatesVolumeToAskUser->FillBuffer( 0 );
+
+	  bool this_CCP_is_true_candidate = false;
+
+	  cout << ">>>===========User=Interaction============<<<" << std::endl;
+	  for(n=0; n<numTopCcptoEvaluate; n++)
+	  {
+
+	       if(!stop_doing_activeLearning && countNumThisCCPisTrueCandidate<1)
+	       {
+		    cout << " Label: "<<  ccpTopVectorPairs[n].second << " |  Score: " << ccpTopVectorPairs[n].first;
+		    curLabelValue = ccpTopVectorPairs[n].second;
+		    cout << " | Volume: "<< allConnectedComponents[curLabelValue-1].volumeSize << std::endl ;
+
+		    // extract the label volume of current label:
+		    for(k=0; k<slice; k++)
+		    {
+			 for(j=0; j<height; j++)
+			 {
+			      for(i=0; i<width; i++)
+			      {
+
+				   ccpLabelValue = 0;
+				   ccpIndex[0] = i;
+				   ccpIndex[1] = j;
+				   ccpIndex[2] = k;
+				   ccpLabelValue = ccpPredictProb->GetPixel( ccpIndex );
+			 
+				   if(ccpLabelValue == curLabelValue)
+				   {
+					PossibleCandidatesVolumeToAskUser->SetPixel(ccpIndex, 1 );
+				   }
+				   else
+				   {
+					PossibleCandidatesVolumeToAskUser->SetPixel(ccpIndex, 0 );
+				   }
+			      }
+			 }
+		    }
+
+		    // save current label volume
+		    std::string test_save_4 = "AskUserCandidate.nii.gz";
+		    WriterType3DUC::Pointer writer4 = WriterType3DUC::New();
+		    writer4->SetFileName( test_save_4 );
+		    writer4->SetInput( PossibleCandidatesVolumeToAskUser ) ;
+		    writer4->Update();
+	       
+		    // ask user
+		    std::string userStr;
+		    std::string isTrueCandidate ("y");
+		    std::string notTrueCandidate ("n");
