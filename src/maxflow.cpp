@@ -648,4 +648,13 @@ template <typename captype, typename tcaptype, typename flowtype>
 		}
 		else
 		{
-			if (!i->is_sink) assert (i->parent->sister->r_ca
+			if (!i->is_sink) assert (i->parent->sister->r_cap > 0);
+			else             assert (i->parent->r_cap > 0);
+		}
+		// test whether passive nodes in search trees have neighbors in
+		// a different tree through non-saturated edges
+		if (i->parent && !i->next)
+		{
+			if (!i->is_sink)
+			{
+				assert(i->
