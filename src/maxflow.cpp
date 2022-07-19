@@ -629,4 +629,15 @@ template <typename captype, typename tcaptype, typename flowtype>
 			if (i->next == i)
 			{
 				if (r<2) assert(i == queue_last[r]);
-				el
+				else     assert(i == current_node);
+				break;
+			}
+		}
+	}
+	assert(num1 == num2);
+
+	for (i=nodes; i<node_last; i++)
+	{
+		// test whether all edges in seach trees are non-saturated
+		if (i->parent == NULL) {}
+		else if (i->parent == O
