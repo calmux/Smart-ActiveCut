@@ -279,3 +279,197 @@ void morphologicalProcessingTrueCandidatesVolume(ImageType3DUC::Pointer trueCand
 
      ImageType3DUC::IndexType imageIndexUC;
      ImageType3DUC::PixelType imageValueUCerosion, imageValueUCdelision;
+
+     const unsigned int Dimension = 3;
+
+     // do erosion = trueCandidatesVolumeErosion
+     /*
+     typedef itk::BinaryBallStructuringElement<PixelType3DUC, Dimension> StructuringElementType;
+     typedef itk::BinaryErodeImageFilter<ImageType3DUC, ImageType3DUC, StructuringElementType> ErodeFilterType;
+	  
+     ErodeFilterType::Pointer binaryErode = ErodeFilterType::New();
+
+     StructuringElementType structuringElement;
+
+     structuringElement.SetRadius( 1 ); // 3x3 structuring element
+     structuringElement.CreateStructuringElement();
+     binaryErode->SetKernel( structuringElement );
+     binaryErode->SetInput( trueCandidatesVolume );
+     binaryErode->SetErodeValue( 1 );
+
+     ImageType3DUC::Pointer tempTrueCandidatesVolumeErosion;
+     tempTrueCandidatesVolumeErosion = binaryErode->GetOutput();
+
+     std::string test_save_4 = "test_true_candidates_erosion.nii.gz";
+     WriterType3DUC::Pointer writer4 = WriterType3DUC::New();
+     writer4->SetFileName( test_save_4 );
+     writer4->SetInput( tempTrueCandidatesVolumeErosion ) ;
+     writer4->Update();
+     */
+
+     // no erosion
+     ImageType3DUC::Pointer tempTrueCandidatesVolumeErosion;
+     tempTrueCandidatesVolumeErosion = trueCandidatesVolume;
+
+     for(k=0; k<slice; k++)
+     {
+	  for(j=0; j<height; j++)
+	  {
+	       for(i=0; i<width; i++)
+	       {
+		    imageValueUCerosion = 0;
+		    imageIndexUC[0] = i;
+		    imageIndexUC[1] = j;
+		    imageIndexUC[2] = k;
+		    imageValueUCerosion = tempTrueCandidatesVolumeErosion->GetPixel( imageIndexUC );
+
+		    trueCandidatesVolumeErosion->SetPixel(imageIndexUC, imageValueUCerosion );
+	       }
+	  }
+     }
+     
+
+     // do dilation
+
+     typedef itk::BinaryBallStructuringElement<PixelType3DUC, Dimension> StructuringElementTypeDilation;
+     typedef itk::BinaryDilateImageFilter<ImageType3DUC, ImageType3DUC, StructuringElementTypeDilation> DilateFilterType;
+     DilateFilterType::Pointer binaryDilate = DilateFilterType::New();
+
+     StructuringElementTypeDilation structuringElementDilation;
+     structuringElementDilation.SetRadius( 1 ); // 3x3 structuring element
+     structuringElementDilation.CreateStructuringElement();
+
+     binaryDilate->SetKernel( structuringElementDilation );
+     binaryDilate->SetInput( trueCandidatesVolume );
+     binaryDilate->SetDilateValue( 1 );
+
+     // use extract image filter instead of saving the dilated volume - don't use this!
+     /*
+     ImageType3DUC::Pointer tempImagePointer = binaryDilate->GetOutput();
+     typedef itk::ExtractImageFilter< ImageType3DUC, ImageType3DUC > FilterType;
+     FilterType::Pointer filter = FilterType::New();
+     filter->SetExtractionRegion(outRegion);
+     filter->SetInput(tempImagePointer);
+     filter->SetDirectionCollapseToIdentity(); // This is required.
+     filter->Update();
+     ImageType3DUC::Pointer trueCandidatesVolumeDilation = filter->GetOutput();
+     */
+
+     // use this to make sure no segmentation fault and no wrong result.
+     ImageType3DUC::Pointer trueCandidatesVolumeDilation = ImageType3DUC::New();
+     trueCandidatesVolumeDilation->SetRegions(outRegion);
+     trueCandidatesVolumeDilation->Allocate();
+     trueCandidatesVolumeDilation->FillBuffer( 0 );
+     trueCandidatesVolumeDilation = binaryDilate->GetOutput();
+     std::string test_save_5 = "test_true_candidates_dilation.nii.gz";
+     WriterType3DUC::Pointer writer5 = WriterType3DUC::New();
+     writer5->SetFileName( test_save_5 );
+     writer5->SetInput( trueCandidatesVolumeDilation ) ;
+     writer5->Update();
+     
+
+     // dilation - erosion = trueCandidatesVolumeDilationMinusErosion
+
+     for(k=0; k<slice; k++)
+     {
+	  for(j=0; j<height; j++)
+	  {
+	       for(i=0; i<width; i++)
+	       {
+		    imageValueUCerosion = 0;
+		    imageValueUCdelision = 0;
+		    imageIndexUC[0] = i;
+		    imageIndexUC[1] = j;
+		    imageIndexUC[2] = k;
+		    imageValueUCerosion = trueCandidatesVolumeErosion->GetPixel( imageIndexUC );
+		    imageValueUCdelision = trueCandidatesVolumeDilation->GetPixel( imageIndexUC );
+
+		    if(imageValueUCerosion < 1 && imageValueUCdelision > 0)
+		    {
+			 trueCandidatesVolumeDilationMinusErosion->SetPixel(imageIndexUC, 1 );
+		    }
+	       }
+	  }
+     }
+
+     // std::string test_save_6 = "test_true_candidates_dilationMinusErosion.nii.gz";
+     // WriterType3DUC::Pointer writer6 = WriterType3DUC::New();
+     // writer6->SetFileName( test_save_6 );
+     // writer6->SetInput( trueCandidatesVolumeDilationMinusErosion ) ;
+     // writer6->Update();
+
+}
+
+
+bool computeShapeScoreforCcpCandidates (ImageType3DI::Pointer ccpPredictProb,
+					ImageType3DC::Pointer trimap,
+					const int& numTopCcptoEvaluate,
+					std::vector< std::pair<int, int> >& ccpVectorPairs,
+					ConnectedCompInfor allConnectedComponents[],
+					const float& thresholdScoreforTopCandidates)
+
+
+{
+     std::cout << "Compute shape information for Top ranked connected componets:" << std::endl;
+
+     const ImageType3DI::SizeType sizeOfImage = ccpPredictProb->GetLargestPossibleRegion().GetSize();
+     
+     int width = sizeOfImage[0];
+     int height = sizeOfImage[1];
+     int slice = sizeOfImage[2];
+
+     ImageType3DI::RegionType outRegion = ccpPredictProb->GetLargestPossibleRegion();
+
+     // print the sorted connected components based on volume
+     int i,j,k,n;
+     int curLabelValue = 0;
+     ImageType3DI::IndexType ccpIndex;
+     ImageType3DI::PixelType ccpLabelValue;
+
+     const unsigned int Dimension = 3;
+
+     float curScoreCriteria = 0;
+     float curShapeScore = 0;
+     float shapeScoreScaling = 1.0;
+     float curVolumeMultiplyProb = 0;
+     
+     //mypairFI * const ccpTopPair = (mypairFI*)_alloca(numTopCcptoEvaluate * sizeof(mypairFI)); // got error in linux
+     mypairFI * const ccpTopPair = new mypairFI[numTopCcptoEvaluate];
+
+     //for(n=0; n<numTopCcptoEvaluate; n++)
+     for(n=0; n<numTopCcptoEvaluate; n++)
+     {
+	  //cout << "Volume: " << ccpVectorPairs[n].first << " Label: "<<  ccpVectorPairs[n].second << std::endl;
+	  cout << " Label: "<<  ccpVectorPairs[n].second << " |  Volume: " << ccpVectorPairs[n].first ;
+	  curLabelValue = ccpVectorPairs[n].second;
+	  cout << " | Avg Prob.: "<< allConnectedComponents[curLabelValue].avgPredictProb << std::endl ;
+
+	  // for each connected components
+	  // step 1: extract the label
+	  
+
+	  ImageType3DUC::Pointer curCCPLabel = ImageType3DUC::New();
+	  curCCPLabel->SetRegions(outRegion);
+	  curCCPLabel->Allocate();
+	  curCCPLabel->FillBuffer( 0 );
+
+	  for(k=0; k<slice; k++)
+	  {
+	       for(j=0; j<height; j++)
+	       {
+		    for(i=0; i<width; i++)
+		    {
+
+			 ccpLabelValue = 0;
+			 ccpIndex[0] = i;
+			 ccpIndex[1] = j;
+			 ccpIndex[2] = k;
+			 ccpLabelValue = ccpPredictProb->GetPixel( ccpIndex );
+			 
+			 if(ccpLabelValue == curLabelValue)
+			 {
+			      curCCPLabel->SetPixel(ccpIndex, 1 );
+			 }
+		    }
+	       }
+	  }
