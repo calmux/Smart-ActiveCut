@@ -667,3 +667,12 @@ template <typename captype, typename tcaptype, typename flowtype>
 			{
 				assert(i->tr_cap <= 0);
 				for (a=i->first; a; a=a->next)
+				{
+					if (a->sister->r_cap > 0) assert(a->head->parent && a->head->is_sink);
+				}
+			}
+		}
+		// test marking invariants
+		if (i->parent && i->parent!=ORPHAN && i->parent!=TERMINAL)
+		{
+			asse
