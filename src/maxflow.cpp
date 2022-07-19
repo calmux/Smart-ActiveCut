@@ -640,4 +640,12 @@ template <typename captype, typename tcaptype, typename flowtype>
 	{
 		// test whether all edges in seach trees are non-saturated
 		if (i->parent == NULL) {}
-		else if (i->parent == O
+		else if (i->parent == ORPHAN) {}
+		else if (i->parent == TERMINAL)
+		{
+			if (!i->is_sink) assert(i->tr_cap > 0);
+			else             assert(i->tr_cap < 0);
+		}
+		else
+		{
+			if (!i->is_sink) assert (i->parent->sister->r_ca
