@@ -707,3 +707,226 @@ bool computeShapeScoreforCcpCandidates (ImageType3DI::Pointer ccpPredictProb,
 		    std::string userStr;
 		    std::string isTrueCandidate ("y");
 		    std::string notTrueCandidate ("n");
+		    std::string stopActiveLearning ("s");
+		    std::cout << "Please look at the saved label volume 'AskUserCandidate.nii.gz' in current folder"<< std::endl;
+		    std::cout << "If this CCP lesion? Yes or No (y/n), you can also choose stop (s) to stop active learning. \n";
+		    std::cin >> userStr;
+		    if(userStr.compare(isTrueCandidate) == 0)
+		    {
+			 // user input is yes
+			 this_CCP_is_true_candidate = true;
+			 countNumThisCCPisTrueCandidate++;
+		    }
+		    if(userStr.compare(stopActiveLearning) == 0)
+		    {
+			 // user input is yes
+			 stop_doing_activeLearning = true;
+		    }
+
+		    ImageType3DUC::IndexType ccpIndexUC;
+		    ImageType3DUC::PixelType ccpLabelValueUC;
+
+		    if(this_CCP_is_true_candidate)
+		    {
+			 // User tells machine this CCP is true candidate
+			 // add this label volume to true candidte volume
+		    
+			 for(k=0; k<slice; k++)
+			 {
+			      for(j=0; j<height; j++)
+			      {
+				   for(i=0; i<width; i++)
+				   {
+					ccpLabelValueUC = 0;
+					ccpIndexUC[0] = i;
+					ccpIndexUC[1] = j;
+					ccpIndexUC[2] = k;
+					ccpLabelValueUC = PossibleCandidatesVolumeToAskUser->GetPixel( ccpIndexUC );
+
+					if(ccpLabelValueUC == 1)
+					{
+					     //std::cout << "In case user says 'y', add this CCP to true candidate."<< std::endl;
+					     trueCandidatesVolume->SetPixel(ccpIndexUC, 1 );
+					}
+				   }
+			      }
+			 }
+		    }
+		    if(!this_CCP_is_true_candidate && !stop_doing_activeLearning)
+		    {
+			 // User tells machine this CCP is not lesion
+			 // add this to trimap as 3 (HC_BG_NEW)
+
+			 ImageType3DC::IndexType thisIndexDC;
+			 
+			 for(k=0; k<slice; k++)
+			 {
+			      for(j=0; j<height; j++)
+			      {
+				   for(i=0; i<width; i++)
+				   {
+					ccpLabelValueUC = 0;
+					ccpIndexUC[0] = i;
+					ccpIndexUC[1] = j;
+					ccpIndexUC[2] = k;
+					ccpLabelValueUC = PossibleCandidatesVolumeToAskUser->GetPixel( ccpIndexUC );
+
+					thisIndexDC[0] = i;
+					thisIndexDC[1] = j;
+					thisIndexDC[2] = k;
+
+					if(ccpLabelValueUC == 1)
+					{
+					     // HC_BG_NEW = 3
+					     trimap->SetPixel(thisIndexDC, 3 );
+					}
+				   }
+			      }
+			 }
+		    }// in case user tells this CCP is wrong.
+	       }
+	  }
+
+	  cout << ">>>=========End=of=User=Interaction=========<<<" << std::endl;
+     }
+
+     if(!stop_doing_activeLearning || countNumThisCCPisTrueCandidate>0)
+     {
+	  ImageType3DUC::Pointer trueCandidatesVolumeErosion = ImageType3DUC::New();
+	  trueCandidatesVolumeErosion->SetRegions(outRegion);
+	  trueCandidatesVolumeErosion->Allocate();
+	  trueCandidatesVolumeErosion->FillBuffer( 0 );
+
+	  ImageType3DUC::Pointer trueCandidatesVolumeDilationMinusErosion = ImageType3DUC::New();
+	  trueCandidatesVolumeDilationMinusErosion->SetRegions(outRegion);
+	  trueCandidatesVolumeDilationMinusErosion->Allocate();
+	  trueCandidatesVolumeDilationMinusErosion->FillBuffer( 0 );
+
+	  morphologicalProcessingTrueCandidatesVolume(trueCandidatesVolume, trueCandidatesVolumeErosion, trueCandidatesVolumeDilationMinusErosion);
+
+	  // use the trueCandidatesVolumeErosion & trueCandidatesVolumeDilationMinusErosion
+	  // to modify the trimap; trueCandidatesVolumeErosion == 1, trimap = 1; foreground
+	  // trueCandidatesVolumeDilationMinusErosion == 1, trimap = 0; uncertain
+     
+	  ImageType3DUC::IndexType curImageIndexUC;
+	  ImageType3DUC::PixelType curImageValueUCerosion, curImageValueUCdelisionMinusErosion;
+
+	  for(k=0; k<slice; k++)
+	  {
+	       for(j=0; j<height; j++)
+	       {
+		    for(i=0; i<width; i++)
+		    {
+			 curImageValueUCerosion = 0;
+			 curImageValueUCdelisionMinusErosion = 0;
+			 curImageIndexUC[0] = i;
+			 curImageIndexUC[1] = j;
+			 curImageIndexUC[2] = k;
+			 curImageValueUCerosion = trueCandidatesVolumeErosion->GetPixel( curImageIndexUC );
+			 curImageValueUCdelisionMinusErosion = trueCandidatesVolumeDilationMinusErosion->GetPixel( curImageIndexUC );
+
+			 ccpIndex[0] = i;
+			 ccpIndex[1] = j;
+			 ccpIndex[2] = k;
+
+			 if(curImageValueUCerosion > 0)
+			 {
+			      //std::cout << "set as foreground " << std::endl;
+			      trimap->SetPixel(ccpIndex, 1 );
+			 }
+
+			 if(curImageValueUCdelisionMinusErosion > 0)
+			 {
+			      trimap->SetPixel(ccpIndex, 0 );
+			 }
+		    }
+	       }
+	  }
+
+	  /*
+	  std::cout << "-----------> Debug <----------- " << std::endl;
+	  std::cout << "save current trimap to check the result. " << std::endl;
+	  std::cout << "-----------> Debug <----------- " << std::endl;
+	  WriterType3DC::Pointer writer = WriterType3DC::New();
+	  //WriterType3DUC::Pointer writer = WriterType3DUC::New();
+	  std::cout << "type a file name to save true candidate volume " << std::endl;
+	  std::string save_name_for_checking_trimap;
+	  std::cin >> save_name_for_checking_trimap;
+	  writer->SetFileName( save_name_for_checking_trimap );
+	  writer->SetInput( trimap ) ;
+	  //writer->SetInput( trueCandidatesVolumeDilationMinusErosion ) ;
+	  writer->Update();
+	  std::cout << "This cin is for debug:" << std::endl;
+	  int temptempVar = 0;
+	  std::cin >> temptempVar;
+	  */
+	  
+
+     }
+     
+     // free the memory space
+     delete [] ccpTopPair;
+
+     if(stop_doing_activeLearning)
+     {
+	  return false;
+     }
+     else
+     {
+	  return true;
+     }
+}
+
+
+
+bool activeLearnCCP(ImageType3DF::Pointer predictProb,
+		   ImageType3DI::Pointer alphaLabel,
+		   ImageType3DC::Pointer trimap,
+		   float thresholdPredictProb,
+		   float thresholdScoreforTopCandidates,
+		   int thresholdCCPVolume)
+{
+     ImageType3DI::Pointer binaryPredictProb = ImageType3DI::New();
+     ImageType3DI::Pointer ccpPredictProb = ImageType3DI::New();
+
+     // ImageType3DI::Pointer OutputImage = ImageType3DI::New();
+
+     // Read information
+     const ImageType3DI::SizeType sizeOfImage = alphaLabel->GetLargestPossibleRegion().GetSize();
+     
+     int width = sizeOfImage[0];
+     int height = sizeOfImage[1];
+     int slice = sizeOfImage[2];
+
+
+     /*
+     std::cout << "-----------> Debug <----------- " << std::endl;
+     std::cout << "save alpha label and predicted prob. " << std::endl;
+     std::cout << "-----------> Debug <----------- " << std::endl;
+     std::cout << "type a file name to save alpha label " << std::endl;
+     WriterType3DI::Pointer writerAlpha = WriterType3DI::New();
+     std::string save_name_for_checking_alpha;
+     std::cin >> save_name_for_checking_alpha;
+     writerAlpha->SetFileName( save_name_for_checking_alpha );
+     writerAlpha->SetInput( alphaLabel ) ;
+     writerAlpha->Update();
+     std::cout << "alpha label is saved! " << std::endl;
+     std::cout << "type a file name to save predicted prob label " << std::endl;
+     WriterType3DF::Pointer writerpredictedProb = WriterType3DF::New();
+     std::string save_name_for_checking_predictedProb;
+     std::cin >> save_name_for_checking_predictedProb;
+     writerpredictedProb->SetFileName( save_name_for_checking_predictedProb );
+     writerpredictedProb->SetInput( predictProb ) ;
+     writerpredictedProb->Update();
+     std::cout << "predicted prob is saved! " << std::endl;
+     */
+
+     // print the image size
+     std::cout << "Volume Size" << std::endl;
+     std::cout << "width: " <<  width << ", height: " << height << ", slice: " << slice << std::endl;
+
+     // threshold the probability query volume
+     ImageType3DI::RegionType outRegion = alphaLabel->GetLargestPossibleRegion();
+     binaryPredictProb->SetRegions(outRegion);
+     binaryPredictProb->Allocate();
+     binaryPredictProb->FillBuffer( 0 );
