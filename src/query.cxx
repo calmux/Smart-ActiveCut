@@ -930,3 +930,216 @@ bool activeLearnCCP(ImageType3DF::Pointer predictProb,
      binaryPredictProb->SetRegions(outRegion);
      binaryPredictProb->Allocate();
      binaryPredictProb->FillBuffer( 0 );
+
+     int i,j,k;
+
+     ImageType3DF::IndexType pixelIndex;
+     ImageType3DF::PixelType pixelValue;
+     ImageType3DI::IndexType maskIndex;
+     ImageType3DI::PixelType maskValue, binaryValue;
+
+     ImageType3DC::IndexType pixelIndexDCtype;
+     ImageType3DC::PixelType pixelValueDCtype;
+
+     binaryValue = 1;
+
+     for(k=0; k<slice; k++)
+     {
+	  for(j=0; j<height; j++)
+	  {
+	       for(i=0; i<width; i++)
+	       {
+		    pixelValue = 0;
+		    maskValue = 0;
+
+		    pixelIndex[0] = i;
+		    pixelIndex[1] = j;
+		    pixelIndex[2] = k;
+
+		    maskIndex[0] = i;
+		    maskIndex[1] = j;
+		    maskIndex[2] = k;
+
+		    pixelIndexDCtype[0] = i;
+		    pixelIndexDCtype[1] = j;
+		    pixelIndexDCtype[2] = k;
+
+		    pixelValue = predictProb->GetPixel( pixelIndex );
+		    maskValue = alphaLabel->GetPixel( maskIndex );
+		    pixelValueDCtype = trimap->GetPixel( pixelIndexDCtype );
+
+		    // remove the foreground area AND user rejected area
+		    // alpha value is 1 or 0, 1: foreground; 0: background
+		    if(maskValue < 1 && pixelValueDCtype != 3)
+		    {
+			 // the prediction probability is larger than the threshold
+			 if(pixelValue >= thresholdPredictProb)
+			 {
+			      binaryPredictProb->SetPixel( maskIndex, binaryValue );
+			 }
+		    }
+	       }
+	  }
+     }
+
+     // preprocessing the binary volume of predicted probability
+     std::cout << "Call the preprocessingBinaryPredicProb to do preprocessing. "  << std::endl;
+     preprocessingBinaryPredicProb(binaryPredictProb);
+     std::cout << "Preprocessing of binary volume is done! "  << std::endl;
+     
+     // connected component
+     typedef itk::ConnectedComponentImageFilter <ImageType3DI, ImageType3DI >
+	  ConnectedComponentImageFilterType;
+
+     ConnectedComponentImageFilterType::Pointer connected =
+	  ConnectedComponentImageFilterType::New ();
+     connected->SetInput(binaryPredictProb);
+     connected->Update();
+
+     int numConnectedComponents = connected->GetObjectCount();
+
+     std::cout << "Number of connected components: " << numConnectedComponents << std::endl;
+
+     ccpPredictProb->SetRegions(outRegion);
+     ccpPredictProb->Allocate();
+     ccpPredictProb->FillBuffer( 0 );
+     ccpPredictProb = connected->GetOutput();
+
+
+     // initialize the struct for attributes of connected components
+     //ConnectedCompInfor * const allConnectedComponents = (ConnectedCompInfor*)_alloca(numConnectedComponents * sizeof(ConnectedCompInfor)); // got error in linux
+     ConnectedCompInfor * const allConnectedComponents = new ConnectedCompInfor[numConnectedComponents];
+
+     int n;
+     for(n=0; n<numConnectedComponents; n++)
+     {
+	  allConnectedComponents[n].labelValue = n+1;
+	  allConnectedComponents[n].volumeSize = 0;
+	  allConnectedComponents[n].avgPredictProb = 0;
+	  allConnectedComponents[n].sumPredictProb = 0;
+     }
+
+     // initialize the struct for counting the CCP volume and PredictProb.
+     // CountCCP * const countCCPforhere = (CountCCP*)_alloca(numConnectedComponents * sizeof(CountCCP));
+     CountCCP * const countCCPforhere = new CountCCP[numConnectedComponents];
+
+     for(n=0; n<numConnectedComponents; n++)
+     {
+	  countCCPforhere[n].countNumVoxels = 0;
+	  countCCPforhere[n].curSumPredictProb = 0;
+     }
+
+     int countNumVoxel = 0;
+     int curCcpLabelValue = 0;
+     float sumPredictProb = 0;
+     float avgPredictProbCcp = 0;
+     ImageType3DI::IndexType ccpIndex;
+     ImageType3DI::PixelType ccpLabelValue;
+
+     float volumesize = slice*height*width;
+
+     for(k=0; k<slice; k++)
+     {
+	  for(j=0; j<height; j++)
+	  {
+	       for(i=0; i<width; i++)
+	       {
+		    ccpLabelValue = 0;
+		    ccpIndex[0] = i;
+		    ccpIndex[1] = j;
+		    ccpIndex[2] = k;
+		    ccpLabelValue = ccpPredictProb->GetPixel( ccpIndex );
+
+		    pixelValue = 0;
+		    pixelIndex[0] = i;
+		    pixelIndex[1] = j;
+		    pixelIndex[2] = k;
+		    pixelValue = predictProb->GetPixel( pixelIndex );
+
+		    // check if this location is CCP
+		    if(ccpLabelValue > 0)
+		    {
+			 countCCPforhere[ccpLabelValue - 1].countNumVoxels++;
+			 countCCPforhere[ccpLabelValue - 1].curSumPredictProb = countCCPforhere[ccpLabelValue - 1].curSumPredictProb + pixelValue;
+		    }
+
+	       }// end i
+	  }// end j
+     }// end k
+
+     /*
+     for(k=0; k<slice; k++)
+     {
+	  for(j=0; j<height; j++)
+	  {
+	       for(i=0; i<width; i++)
+	       {
+		    ccpLabelValue = 0;
+		    ccpIndex[0] = i;
+		    ccpIndex[1] = j;
+		    ccpIndex[2] = k;
+		    ccpLabelValue = ccpPredictProb->GetPixel( ccpIndex );
+
+		    pixelValue = 0;
+		    pixelIndex[0] = i;
+		    pixelIndex[1] = j;
+		    pixelIndex[2] = k;
+		    pixelValue = predictProb->GetPixel( pixelIndex );
+
+		    // go through to check each CCP
+		    for(n=0; n<numConnectedComponents; n++)
+		    {
+			 curCcpLabelValue = allConnectedComponents[n].labelValue;
+
+			 if(ccpLabelValue == curCcpLabelValue)
+			 {
+			      countCCPforhere[n].countNumVoxels++;
+			      countCCPforhere[n].curSumPredictProb = countCCPforhere[n].curSumPredictProb + pixelValue;
+			 }//end if
+		    }// end for n
+
+		    std::cout << "Compute volume of each CCP: i : " << i << "; j : " << j << "; k : " << k << std::endl;
+	       }// end i
+	  }// end j
+     }// end k
+     */
+
+     for(n=0; n<numConnectedComponents; n++)
+     {
+	  avgPredictProbCcp = 0;
+	  avgPredictProbCcp = countCCPforhere[n].curSumPredictProb/countCCPforhere[n].countNumVoxels;
+
+	  allConnectedComponents[n].volumeSize = countCCPforhere[n].countNumVoxels;
+	  allConnectedComponents[n].avgPredictProb = avgPredictProbCcp;
+	  allConnectedComponents[n].sumPredictProb = countCCPforhere[n].curSumPredictProb;
+     }
+
+     /*
+     for(n=0; n<numConnectedComponents; n++)
+     {
+	  countNumVoxel = 0;
+	  curCcpLabelValue = allConnectedComponents[n].labelValue;
+
+	  sumPredictProb = 0;
+
+	  for(k=0; k<slice; k++)
+	  {
+	       for(j=0; j<height; j++)
+	       {
+		    for(i=0; i<width; i++)
+		    {
+			 ccpLabelValue = 0;
+			 ccpIndex[0] = i;
+			 ccpIndex[1] = j;
+			 ccpIndex[2] = k;
+			 ccpLabelValue = ccpPredictProb->GetPixel( ccpIndex );
+
+			 pixelValue = 0;
+			 pixelIndex[0] = i;
+			 pixelIndex[1] = j;
+			 pixelIndex[2] = k;
+			 pixelValue = predictProb->GetPixel( pixelIndex );
+
+			 if(ccpLabelValue == curCcpLabelValue)
+			 {
+			      countNumVoxel++;
