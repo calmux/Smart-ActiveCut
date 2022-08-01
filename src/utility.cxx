@@ -168,3 +168,212 @@ int save_gmm_labelmap(vnl_matrix<double> & gmm_labels, // initial gmm labels.
 	       }
 	  }
      }
+
+     WriterType3DS::Pointer writer = WriterType3DS::New();
+	  
+     writer->SetInput(labelPtr);
+     writer->SetFileName(filename);
+     try 
+     { 
+	  writer->Update(); 
+     } 
+     catch( itk::ExceptionObject & err ) 
+     { 
+	  std::cerr << "ExceptionObject caught !" << std::endl; 
+	  std::cerr << err << std::endl; 
+	  return EXIT_FAILURE;
+     } 
+
+     std::cout << "save_gmm_labelmap(): File " << filename << " saved.\n";
+
+     return 0;
+}
+
+int save_gmm_posterior(vnl_matrix<double> & gmm_labels, // initial gmm labels.
+		      ParType & par,
+		      const vnl_vector<unsigned> & alpha,
+		      unsigned whatground,
+		      ImageType3DU::Pointer lindexPtr,
+		      std::string filename)
+{
+     // define some variables used for initializing output images. 
+     ImageType4DF::IndexType start;
+     start.Fill(0);
+     ImageType3DU::SizeType lindexSize = lindexPtr->GetLargestPossibleRegion().GetSize();
+     ImageType3DU::IndexType lindexIdx;
+
+     ImageType4DF::SizeType labelSize;
+     labelSize[0] = lindexSize[0];
+     labelSize[1] = lindexSize[1];
+     labelSize[2] = lindexSize[2];
+     if (whatground == ALPHA_FG) labelSize[3] = par.gmm_fg.n_comp;
+     else labelSize[3] = par.gmm_bg.n_comp;
+
+     ImageType4DF::RegionType volRegion;
+     volRegion.SetSize(labelSize);
+     volRegion.SetIndex(start);
+
+     // create gmm label image. 
+     ImageType4DF::Pointer labelPtr = ImageType4DF::New();
+     labelPtr->SetRegions(volRegion);
+     labelPtr->Allocate();
+     labelPtr->FillBuffer( 0 ); // init to zero.
+     ImageType4DF::IndexType labelIdx;
+
+     IteratorType3DU lindexIt(lindexPtr, lindexPtr->GetLargestPossibleRegion());
+
+     unsigned sample_id = 0;
+     for (lindexIt.GoToBegin(); !lindexIt.IsAtEnd(); ++ lindexIt) {
+	  if (lindexIt.Get() > 0) {
+	       sample_id = lindexIt.Get() - 1;
+	       if (alpha[sample_id] == whatground) {
+		    lindexIdx = lindexIt.GetIndex();
+		    labelIdx[0] = lindexIdx[0];
+		    labelIdx[1] = lindexIdx[1];
+		    labelIdx[2] = lindexIdx[2];
+		    for (unsigned k = 0; k < labelSize[3]; k ++) {
+			 labelIdx[3] = k;
+			 labelPtr->SetPixel(labelIdx, gmm_labels(sample_id, k) );
+		    }
+	       }
+	  }
+     }
+
+     WriterType4DF::Pointer writer = WriterType4DF::New();
+	  
+     writer->SetInput(labelPtr);
+     writer->SetFileName(filename);
+     try 
+     { 
+	  writer->Update(); 
+     } 
+     catch( itk::ExceptionObject & err ) 
+     { 
+	  std::cerr << "ExceptionObject caught !" << std::endl; 
+	  std::cerr << err << std::endl; 
+	  return EXIT_FAILURE;
+     } 
+
+     std::cout << "save_gmm_posterior(): File " << filename << " saved.\n";
+
+     return 0;
+}
+
+
+int save_alpha(const ParType & par,
+	       const vnl_vector<unsigned> & alpha,
+	       ImageType3DU::Pointer lindexPtr,
+	       std::string filename)
+{
+     ImageType3DU::RegionType lindexRegion = lindexPtr->GetLargestPossibleRegion();
+
+     // create label label image. 
+     ImageType3DS::Pointer labelPtr = ImageType3DS::New();
+     labelPtr->SetRegions(lindexRegion);
+     labelPtr->Allocate();
+     labelPtr->FillBuffer( 0 ); // init to zero.
+
+     labelPtr->SetOrigin( lindexPtr->GetOrigin() );
+     labelPtr->SetSpacing(lindexPtr->GetSpacing() );
+     labelPtr->SetDirection(lindexPtr->GetDirection() );
+
+     IteratorType3DS labelIt(labelPtr, labelPtr->GetLargestPossibleRegion());
+     IteratorType3DU lindexIt(lindexPtr, lindexPtr->GetLargestPossibleRegion());
+
+     unsigned label = 0, sample_id = 0;
+     for (labelIt.GoToBegin(), lindexIt.GoToBegin(); !lindexIt.IsAtEnd(); ++ lindexIt, ++labelIt) {
+	  if (lindexIt.Get() > 0) {
+	       sample_id = lindexIt.Get() - 1;
+	       if (alpha[sample_id] == ALPHA_FG)
+		    labelIt.Set(1);
+	       else 
+		    labelIt.Set(0);
+	  }
+     }
+
+     WriterType3DS::Pointer writer = WriterType3DS::New();
+	  
+     writer->SetInput(labelPtr);
+     writer->SetFileName(filename);
+     try 
+     { 
+	  writer->Update(); 
+     } 
+     catch( itk::ExceptionObject & err ) 
+     { 
+	  std::cerr << "ExceptionObject caught !" << std::endl; 
+	  std::cerr << err << std::endl; 
+	  return EXIT_FAILURE;
+     } 
+
+     std::cout << "save_alpha(): File " << filename << " saved.\n";
+
+     return 0;
+}
+
+int save_patches(ImageType3DU::Pointer lindexPtr,
+	     const vnl_matrix <double> & data,
+	     std::string outfile,
+	     const ParType & par)
+{
+     ImageType3DU::SizeType lindexSize = lindexPtr->GetLargestPossibleRegion().GetSize();
+     IteratorType3DU lindexIt(lindexPtr, lindexPtr->GetLargestPossibleRegion());
+     ImageType3DU::IndexType lindexIdx;
+
+     unsigned spixel_id = 0;
+     ImageType4DF::IndexType dataIdx;
+     ImageType4DF::SizeType dataSize;
+     dataSize[0] = lindexSize[0];
+     dataSize[1] = lindexSize[1];
+     dataSize[2] = lindexSize[2];
+     dataSize[3] = data.cols();
+
+     ImageType4DF::IndexType start;
+     start.Fill(0);
+     
+     ImageType4DF::RegionType volRegion;
+     volRegion.SetSize(dataSize);
+     volRegion.SetIndex(start);
+
+     // create gmm label image. 
+     ImageType4DF::Pointer dataPtr = ImageType4DF::New();
+     dataPtr->SetRegions(volRegion);
+     dataPtr->Allocate();
+     dataPtr->FillBuffer( 0 ); // init to zero.
+
+     for (lindexIt.GoToBegin(); !lindexIt.IsAtEnd(); ++ lindexIt) {
+	  if (lindexIt.Get() > 0) {
+	       lindexIdx = lindexIt.GetIndex();
+	       spixel_id = lindexIt.Get() - 1; // convert to zero-based indexing.
+	       dataIdx[0] = lindexIdx[0];
+	       dataIdx[1] = lindexIdx[1];
+	       dataIdx[2] = lindexIdx[2];
+	       for (dataIdx[3] = 0; dataIdx[3] < dataSize[3]; dataIdx[3] ++) {
+		    dataPtr->SetPixel(dataIdx, data(spixel_id, dataIdx[3]));
+	       }
+	  } // in mask
+     }
+
+     WriterType4DF::Pointer writer = WriterType4DF::New();
+	  
+     writer->SetInput(dataPtr);
+     writer->SetFileName(outfile);
+     try 
+     { 
+	  writer->Update(); 
+     } 
+     catch( itk::ExceptionObject & err ) 
+     { 
+	  std::cerr << "ExceptionObject caught !" << std::endl; 
+	  std::cerr << err << std::endl; 
+	  return EXIT_FAILURE;
+     } 
+
+     std::cout << "save_patches(): File " << outfile << " saved.\n";
+
+     return 0;
+	  
+}
+
+int save_llmap(const ParType & par,
+	       const vnl_vector<double> & llmap,
