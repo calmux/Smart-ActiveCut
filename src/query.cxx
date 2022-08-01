@@ -1143,3 +1143,166 @@ bool activeLearnCCP(ImageType3DF::Pointer predictProb,
 			 if(ccpLabelValue == curCcpLabelValue)
 			 {
 			      countNumVoxel++;
+			      sumPredictProb = sumPredictProb + pixelValue;
+			 }
+		    }
+	       }
+	  }
+
+	  avgPredictProbCcp = sumPredictProb/countNumVoxel;
+
+	  allConnectedComponents[n].volumeSize = countNumVoxel;
+	  allConnectedComponents[n].avgPredictProb = avgPredictProbCcp;
+	  allConnectedComponents[n].sumPredictProb = sumPredictProb;
+
+	  std::cout << "Compute the volume of each CCP: " << (float(n)/float(numConnectedComponents))*100 << "% is done." << std::endl;
+     }
+
+     */
+     
+     // print the struct of attributes of connected components: 
+     
+     for(n=0; n<numConnectedComponents; n++)
+     {
+	  std::cout << "Label value of ccp: " << allConnectedComponents[n].labelValue << std::endl;
+	  std::cout << "Volume of ccp: " << allConnectedComponents[n].volumeSize << std::endl;
+	  std::cout << "Avg predict prob. of ccp: " << allConnectedComponents[n].avgPredictProb << std::endl;
+	  std::cout << "Sum predict prob. of ccp: " << allConnectedComponents[n].sumPredictProb << std::endl;
+	  std::cout << "---------------" << std::endl;
+     }
+     
+
+     std::cout << "Sort the CCP by volume size." << std::endl;
+     //mypair * const ccpPair = (mypair*)_alloca(numConnectedComponents * sizeof(mypair));
+     mypair * const ccpPair = new mypair[numConnectedComponents];
+
+     for(n=0; n<numConnectedComponents; n++)
+     {
+	  ccpPair[n].first = allConnectedComponents[n].volumeSize;
+	  ccpPair[n].second = allConnectedComponents[n].labelValue;
+     }
+
+     std::vector< pair<int, int> > ccpVectorPairs (ccpPair, ccpPair+numConnectedComponents);
+
+     std::sort (ccpVectorPairs.begin(), ccpVectorPairs.end(), myComparatorforCcp);
+
+     
+
+     int numTopCCPtoEvaluate = 0;
+
+     std::cout << "............................" << std::endl;
+     for(n=0; n<numConnectedComponents; n++)
+     {
+	  if(ccpPair[n].first >= thresholdCCPVolume)
+	  {
+	       numTopCCPtoEvaluate++;
+	       std::cout << "Add CCP label: " << ccpPair[n].second << " volume is: " << ccpPair[n].first << " to candidates list." << std::endl;
+	  }
+	   
+     }
+     std::cout << "............................" << std::endl;
+     std::cout << "Total number of CCP candidates is: " << numTopCCPtoEvaluate << std::endl;
+     std::cout << "............................" << std::endl;
+
+     bool ruturnValue = false;
+
+     if(numTopCCPtoEvaluate > 0)
+     {
+	  // do self training
+	  ruturnValue = computeShapeScoreforCcpCandidates(ccpPredictProb, trimap, numTopCCPtoEvaluate, ccpVectorPairs, allConnectedComponents, thresholdScoreforTopCandidates);
+	  
+	  // free memory space before delete
+	  delete [] allConnectedComponents;
+	  delete [] countCCPforhere;
+	  delete [] ccpPair;
+
+	  return ruturnValue;
+     }
+     else
+     {
+	  // return 0 indicates that active learning should stop.
+	  delete [] allConnectedComponents;
+	  delete [] countCCPforhere;
+	  delete [] ccpPair;
+	  return false;
+     }
+
+     // debug code
+
+     // save the output which is the modified trimap
+     // std::cout << "-----------> Debug <----------- " << std::endl;
+     // std::cout << "save current trimap to check the result. " << std::endl;
+     // std::cout << "-----------> Debug <----------- " << std::endl;
+
+	  
+     // //WriterType3DC::Pointer writer = WriterType3DC::New();
+     // WriterType3DUC::Pointer writer = WriterType3DUC::New();
+     // std::cout << "type a file name to save true candidate volume " << std::endl;
+     // std::string save_name_for_checking_trimap;
+     // std::cin >> save_name_for_checking_trimap;
+     // writer->SetFileName( save_name_for_checking_trimap );
+     // //writer->SetInput( trimap ) ;
+     // writer->SetInput( trueCandidatesVolume ) ;
+     // writer->Update();
+
+     // std::cout << "This cin is for debug:" << std::endl;
+     // int temptempVar = 0;
+     // std::cin >> temptempVar;
+
+     // debug code
+
+}
+
+
+bool update_hardconstraints(const vnl_vector<double> & score_map, 
+			   ImageType3DU::Pointer lindexPtr, 
+			   const vnl_vector<unsigned> & alpha,
+			   ImageType3DC::Pointer init_constraintPtr,
+			   vnl_vector<unsigned> & hard_constraints,
+			   const ParType & par)
+{
+     ImageType3DI::RegionType lindexRegion = lindexPtr->GetLargestPossibleRegion();
+
+     // create alpha image. 
+     ImageType3DI::Pointer alphaPtr = ImageType3DI::New();
+     alphaPtr->SetRegions(lindexRegion);
+     alphaPtr->Allocate();
+     alphaPtr->FillBuffer( 0 ); // init to zero.
+
+     // create query score image.
+     ImageType3DF::Pointer scorePtr = ImageType3DF::New();
+     scorePtr->SetRegions(lindexRegion);
+     scorePtr->Allocate();
+     scorePtr->FillBuffer( 0 ); // init to zero.
+
+     IteratorType3DI alphaIt(alphaPtr, alphaPtr->GetLargestPossibleRegion());
+     IteratorType3DU lindexIt(lindexPtr, lindexPtr->GetLargestPossibleRegion());
+
+     unsigned label = 0, sample_id = 0;
+     for (alphaIt.GoToBegin(), lindexIt.GoToBegin(); !lindexIt.IsAtEnd(); ++ lindexIt, ++alphaIt) {
+	  if (lindexIt.Get() > 0) { // in mask.
+	       sample_id = lindexIt.Get() - 1;
+	       if (alpha[sample_id] == ALPHA_FG)
+		    alphaIt.Set(1);
+	       else 
+		    alphaIt.Set(0);
+	  }
+     }
+
+     // convert score to volume.
+     IteratorType3DF scoreIt(scorePtr, scorePtr->GetLargestPossibleRegion());
+     for (scoreIt.GoToBegin(), lindexIt.GoToBegin(); !lindexIt.IsAtEnd(); ++ lindexIt, ++scoreIt) {
+	  if (lindexIt.Get() > 0) { // in mask.
+	       sample_id = lindexIt.Get() - 1;
+	       scoreIt.Set(score_map[sample_id]);
+	  }
+     }
+
+
+     bool cont_var = true;
+     cont_var = activeLearnCCP(scorePtr, alphaPtr, init_constraintPtr, par.pred_th,  par.qscore_th, 100);     
+
+     // update hard_constraint vector.
+     load_constraints(lindexPtr, init_constraintPtr, hard_constraints, par);
+     return cont_var;
+}
