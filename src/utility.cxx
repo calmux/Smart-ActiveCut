@@ -377,3 +377,141 @@ int save_patches(ImageType3DU::Pointer lindexPtr,
 
 int save_llmap(const ParType & par,
 	       const vnl_vector<double> & llmap,
+	       ImageType3DU::Pointer lindexPtr,
+	       std::string filename)
+{
+     ImageType3DU::RegionType lindexRegion = lindexPtr->GetLargestPossibleRegion();
+
+     // create label label image. 
+     ImageType3DF::Pointer llmapPtr = ImageType3DF::New();
+     llmapPtr->SetRegions(lindexRegion);
+     llmapPtr->Allocate();
+     llmapPtr->FillBuffer( 0 ); // init to zero.
+
+     llmapPtr->SetOrigin( lindexPtr->GetOrigin() );
+     llmapPtr->SetSpacing(lindexPtr->GetSpacing() );
+     llmapPtr->SetDirection(lindexPtr->GetDirection() );
+
+     IteratorType3DF llmapIt(llmapPtr, llmapPtr->GetLargestPossibleRegion());
+     IteratorType3DU lindexIt(lindexPtr, lindexPtr->GetLargestPossibleRegion());
+
+     unsigned sample_id = 0;
+     // normalize to [0, 1].
+     double min = llmap.min_value(), max = llmap.max_value();
+     for (llmapIt.GoToBegin(), lindexIt.GoToBegin(); !lindexIt.IsAtEnd(); ++ lindexIt, ++llmapIt) {
+	  if (lindexIt.Get() > 0) {
+	       sample_id = lindexIt.Get() - 1;
+	       llmapIt.Set( (llmap[sample_id] - min) / (max - min) );
+	  }
+     }
+
+     WriterType3DF::Pointer writer = WriterType3DF::New();
+	  
+     writer->SetInput(llmapPtr);
+     writer->SetFileName(filename);
+     try 
+     { 
+	  writer->Update(); 
+     } 
+     catch( itk::ExceptionObject & err ) 
+     { 
+	  std::cerr << "ExceptionObject caught !" << std::endl; 
+	  std::cerr << err << std::endl; 
+	  return EXIT_FAILURE;
+     } 
+
+     std::cout << "save_alpha(): File " << filename << " saved.\n";
+
+     return 0;
+}
+
+int save_priors(const ParType & par,
+	       const vnl_matrix<double> & priors,
+	       ImageType3DU::Pointer lindexPtr,
+	       std::string filename)
+{
+     ImageType3DU::RegionType lindexRegion = lindexPtr->GetLargestPossibleRegion();
+
+     // create prior image. 
+     ImageType3DU::Pointer priorPtr = ImageType3DU::New();
+     priorPtr->SetRegions(lindexRegion);
+     priorPtr->Allocate();
+     priorPtr->FillBuffer( 0 ); // init to zero.
+
+     priorPtr->SetOrigin( lindexPtr->GetOrigin() );
+     priorPtr->SetSpacing(lindexPtr->GetSpacing() );
+     priorPtr->SetDirection(lindexPtr->GetDirection() );
+
+     IteratorType3DU priorIt(priorPtr, priorPtr->GetLargestPossibleRegion());
+     IteratorType3DU lindexIt(lindexPtr, lindexPtr->GetLargestPossibleRegion());
+
+     unsigned sample_id = 0;
+     for (priorIt.GoToBegin(), lindexIt.GoToBegin(); !lindexIt.IsAtEnd(); ++ lindexIt, ++priorIt) {
+	  if (lindexIt.Get() > 0) {
+	       sample_id = lindexIt.Get() - 1;
+	       priorIt.Set(priors.get_row(sample_id).arg_max() + 1);
+	  }
+     }
+
+     WriterType3DU::Pointer writer = WriterType3DU::New();
+	  
+     writer->SetInput(priorPtr);
+     writer->SetFileName(filename);
+     try 
+     { 
+	  writer->Update(); 
+     } 
+     catch( itk::ExceptionObject & err ) 
+     { 
+	  std::cerr << "ExceptionObject caught !" << std::endl; 
+	  std::cerr << err << std::endl; 
+	  return EXIT_FAILURE;
+     } 
+
+     std::cout << "save_alpha(): File " << filename << " saved.\n";
+
+     return 0;
+}
+
+
+int print_gmm_to_file(const GMMType & gmm, bool isFG)
+{
+     FILE * pFile;
+     char fileName[] = "GMM_parameters_";
+     if(isFG)
+     {
+	  strcat(fileName,"FG.txt");
+     }
+     else
+     {
+	  strcat(fileName,"BG.txt");
+     }
+
+     std::cout << "saved GMM parameters file name: " << fileName << "\n";
+
+     pFile = fopen (fileName ,"w");
+
+     unsigned n_channels = gmm.comp[0].mu.size();
+     fprintf(pFile, "%i\n", gmm.n_comp);
+     fprintf(pFile, "\n");
+
+     for (unsigned k = 0; k < gmm.n_comp; k ++) {
+	  // print mu
+	  for (unsigned i = 0; i < n_channels; i ++) 
+	       fprintf(pFile, "%10.2f ", gmm.comp[k].mu[i]);
+	  fprintf(pFile, "\n");
+	  fprintf(pFile, "\n");
+
+	  // print cov
+	  for (unsigned i = 0; i < n_channels; i ++) {
+	       for (unsigned j = 0; j < n_channels; j ++) {
+		    fprintf(pFile, "%10.2f ", gmm.comp[k].cov(i,j));
+	       }
+	       fprintf(pFile, "\n");
+	  }
+	  fprintf(pFile, "\n");
+     }
+
+     fclose(pFile);
+	 return 1;
+}
