@@ -10,4 +10,10 @@ int save_gmm_labelmap(vnl_matrix<double> & gmm_labels, // initial gmm labels.
 		      const vnl_vector<unsigned> & alpha,
 		      unsigned whatground,
 		      ImageType3DU::Pointer lindexPtr,
-		
+		      std::string filename);
+
+// save gmm posterior into 4D file.
+int save_gmm_posterior(vnl_matrix<double> & gmm_labels, // initial gmm labels.
+		      ParType & par,
+		      const vnl_vector<unsigned> & alpha,
+		      unsigned w
