@@ -16,4 +16,11 @@ int save_gmm_labelmap(vnl_matrix<double> & gmm_labels, // initial gmm labels.
 int save_gmm_posterior(vnl_matrix<double> & gmm_labels, // initial gmm labels.
 		      ParType & par,
 		      const vnl_vector<unsigned> & alpha,
-		      unsigned w
+		      unsigned whatground,
+		      ImageType3DU::Pointer lindexPtr,
+		       std::string filename);
+
+int save_alpha(const ParType & par,
+	       const vnl_vector<unsigned> & alpha,
+	       ImageType3DU::Pointer lindexPtr,
+	
