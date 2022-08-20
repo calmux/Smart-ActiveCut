@@ -27,4 +27,10 @@ int save_alpha(const ParType & par,
 
 // for debug purpose. Save NxP data matrix back into image. The voxels in same
 // patch of the output image will have same intensity, which is from the mean of
-// the intensities 
+// the intensities of the patch.
+int save_patches(ImageType3DI::Pointer parcelPtr,
+	     const vnl_matrix <double> & data,
+	     std::string outfile,
+	     const ParType & par);
+
+// save the log-likelihood map to 3d file. M
