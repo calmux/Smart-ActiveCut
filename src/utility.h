@@ -23,4 +23,8 @@ int save_gmm_posterior(vnl_matrix<double> & gmm_labels, // initial gmm labels.
 int save_alpha(const ParType & par,
 	       const vnl_vector<unsigned> & alpha,
 	       ImageType3DU::Pointer lindexPtr,
-	
+	       std::string filename);
+
+// for debug purpose. Save NxP data matrix back into image. The voxels in same
+// patch of the output image will have same intensity, which is from the mean of
+// the intensities 
