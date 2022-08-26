@@ -33,4 +33,11 @@ int save_patches(ImageType3DI::Pointer parcelPtr,
 	     std::string outfile,
 	     const ParType & par);
 
-// save the log-likelihood map to 3d file. M
+// save the log-likelihood map to 3d file. May be used to detect candidate
+// lesion.
+int save_llmap(const ParType & par,
+	       const vnl_vector<double> & llmap,
+	       ImageType3DU::Pointer lindexPtr,
+	       std::string filename);
+
+// for
