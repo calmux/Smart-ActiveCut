@@ -40,4 +40,10 @@ int save_llmap(const ParType & par,
 	       ImageType3DU::Pointer lindexPtr,
 	       std::string filename);
 
-// for
+// for debug purpose.
+int save_priors(const ParType & par,
+	       const vnl_matrix<double> & priors,
+	       ImageType3DU::Pointer lindexPtr,
+		std::string filename);
+
+int save_image(ImageType3DF::Po
