@@ -46,4 +46,7 @@ int save_priors(const ParType & par,
 	       ImageType3DU::Pointer lindexPtr,
 		std::string filename);
 
-int save_image(ImageType3DF::Po
+int save_image(ImageType3DF::Pointer ptr, std::string filename);
+
+// print the final GMM parameters to file for registration part to use:
+int print_gmm_to_file(const GMMType & gmm, bool isFG);
