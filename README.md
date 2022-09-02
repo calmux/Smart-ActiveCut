@@ -1,1 +1,1 @@
-! [logo] (activeCut_logo.png)\n## Smart-ActiveCut\nActive learni
+! [logo] (activeCut_logo.png)\n## Smart-ActiveCut\nActive learning-based interactive tool for semi-supervised image segmentation (lesion\/tumor segmentation as an example of application)\n\n\n### Overview of the proposed algorithm\n! [flowchart] (activeCut_flowchart.png)\n\n\n### Instal
